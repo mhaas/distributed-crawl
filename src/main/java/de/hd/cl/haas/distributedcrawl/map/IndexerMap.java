@@ -26,7 +26,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  *
  * @author Michael Haas
  */
-public class IndexerMap extends Mapper<LongWritable, Text, Text, String[]> {
+public class IndexerMap extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -60,29 +60,7 @@ public class IndexerMap extends Mapper<LongWritable, Text, Text, String[]> {
             System.out.println("Out-value: " + compositeValue);
             // TODO: is compositeValue properly serialized?
             tTerm.set(term);
-            context.write(tTerm, compositeValue);
+            context.write(new Text(term), new Text(value.toString() + "," + counts.get(term).toString()));
         }
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-        Configuration conf = new Configuration();
-
-        Job job = new Job(conf, "IndexerMap");
-
-        //job.setOutputKeyClass(Text.class);
-        //job.setOutputValueClass(IntWritable.class);
-
-        job.setJarByClass(IndexerMap.class);
-        job.setMapperClass(IndexerMap.class);
-        //job.setReducerClass(Reduce.class);
-
-        // TextInputFormat: key is offset in file, value is line
-        job.setInputFormatClass(TextInputFormat.class);
-        //job.setOutputFormatClass(TextOutputFormat.class);
-
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-        job.waitForCompletion(true);
     }
 }
