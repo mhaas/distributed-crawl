@@ -1,4 +1,4 @@
-package de.uniheidelberg.cl.haas.distributedcrawl;
+package de.hd.cl.haas.distributedcrawl;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
