@@ -1,14 +1,15 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.uni-heidelberg.cl.haas</groupId>
-  <artifactId>DistributedCrawl</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <groupId>de.uni-heidelberg.cl.haas</groupId>
+    <artifactId>DistributedCrawl</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-  <name>DistributedCrawl</name>
-  <url>http://maven.apache.org</url>
+    <name>DistributedCrawl</name>
+    <url>http://maven.apache.org</url>
     <build>
         <plugins>
             <plugin>
@@ -21,28 +22,82 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+            <!-- <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${env}.${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <filters>
+                                <filter>src/main/filters/${env}/${build.env}/filter-common.properties</filter>
+                                <filter>src/main/filters/${env}/${build.env}/filter-${user.name}.properties</filter>
+                            </filters>
+                            <descriptors>
+                                <descriptor>src/main/assembly/distribution.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+            <plugin>
+                <groupId>com.github.maven-hadoop.plugin</groupId>
+                <artifactId>maven-hadoop-plugin</artifactId>
+                <version>0.20.1</version>
+                <configuration>
+                    <hadoopHome>/usr/lib/hadoop-0.20/</hadoopHome>
+                </configuration>
+            </plugin>
+          <!--  <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <id>cleandfs</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>/usr/bin/hadoop dfs -rmr dcrawl-out</executable>
+                </configuration>
+            </plugin> -->
+
         </plugins>
     </build>
-    <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-core</artifactId>
-      <version>0.20.2</version>
-    </dependency>
-    <dependency>
-      <groupId>net.htmlparser.jericho</groupId>
-      <artifactId>jericho-html</artifactId>
-      <version>3.2</version>
-    </dependency>
-  </dependencies>
+   
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>0.20.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.htmlparser.jericho</groupId>
+            <artifactId>jericho-html</artifactId>
+            <version>3.2</version>
+        </dependency>
+    
+    </dependencies>
 </project>
+

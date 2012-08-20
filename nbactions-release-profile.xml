@@ -7,8 +7,8 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath de.hd.cl.haas.distributedcrawl.map.IndexerMap dcrawl dcrawl-out</exec.args>
-                <exec.executable>java</exec.executable>
+                <exec.args>jar target/hadoop-deploy/DistributedCrawl-hdeploy.jar de.hd.cl.haas.distributedcrawl.map.IndexerMap dcrawl dcrawl-out</exec.args>
+                <exec.executable>hadoop</exec.executable>
                 <exec.classpathScope>runtime</exec.classpathScope>
             </properties>
         </action>
@@ -36,5 +36,12 @@
                 <exec.executable>${profiler.java}</exec.executable>
                 <profiler.action>profile</profiler.action>
             </properties>
+        </action>
+        <action>
+            <actionName>build</actionName>
+            <goals>
+                <goal>install</goal>
+                <goal>hadoop:pack</goal>
+            </goals>
         </action>
     </actions>

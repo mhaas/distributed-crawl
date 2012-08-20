@@ -56,8 +56,8 @@ public class IndexerMap extends Mapper<LongWritable, Text, Text, Text> {
         for (String term : counts.keySet()) {
             // Emit(term t, posting <n,H{t}>)      
             String[] compositeValue = {value.toString(), counts.get(term).toString()};
-            System.out.println("Out-key: " + term);
-            System.out.println("Out-value: " + compositeValue);
+            //System.out.println("Out-key: " + term);
+            //System.out.println("Out-value: " + compositeValue);
             // TODO: is compositeValue properly serialized?
             tTerm.set(term);
             context.write(new Text(term), new Text(value.toString() + "," + counts.get(term).toString()));
