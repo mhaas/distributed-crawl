@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -37,16 +39,24 @@ public class IndexerMap extends Mapper<LongWritable, Text, Text, Text> {
         InputStream stream = url.openStream();
         Source source = new Source(stream);
         source.fullSequentialParse();
+        List<Element> anchorElements = source.getAllElements("a");
+        for (Element anchorElement: anchorElements) {
+            String target = anchorElement.getAttributeValue("href");
+            System.out.println("Anchor target is: " + target);
+        }
         String completeContent = source.getTextExtractor().toString();
         System.out.println("CompleteContent: ");
         System.out.println(completeContent);
         // poor man's tokenizer
         String[] tokens = completeContent.split(" ");
-
+        
         // count absolute frequencies for terms
         HashMap<String, Integer> counts = new HashMap<String, Integer>();
         for (int ii = 0; ii < tokens.length; ii++) {
             String term = tokens[ii];
+            // clean up string
+            term = term.replace(",", "");
+            term = term.replace(".", "");
             if (!counts.containsKey(term)) {
                 counts.put(term, 0);
             }
