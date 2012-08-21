@@ -25,7 +25,7 @@ public class Posting extends TextIntWritable implements WritableComparable<Posti
         super(s, i);
     }
 
-    public Posting(Text t, IntWritable i) {
+    public Posting(Term t, IntWritable i) {
         super(t, i);
     }
 

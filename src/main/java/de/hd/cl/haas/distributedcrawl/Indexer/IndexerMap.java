@@ -5,6 +5,7 @@
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
 import de.hd.cl.haas.distributedcrawl.common.Posting;
+import de.hd.cl.haas.distributedcrawl.common.Term;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -31,12 +32,12 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  *
  * @author Michael Haas
  */
-public class IndexerMap extends Mapper<LongWritable, Text, Text, Posting> {
+public class IndexerMap extends Mapper<LongWritable, Term, Term, Posting> {
 
     private SequenceFile.Writer writer;
 
     @Override
-    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+    protected void map(LongWritable key, Term value, Context context) throws IOException, InterruptedException {
         if (this.writer == null) {
             FileSystem fs = FileSystem.get(context.getConfiguration());
             Path p = new Path(context.getWorkingDirectory(), "foo");
@@ -86,7 +87,7 @@ public class IndexerMap extends Mapper<LongWritable, Text, Text, Posting> {
             }
             counts.put(term, counts.get(term) + 1);
         }
-        Text tTerm = new Text();
+        Term tTerm = new Term();
         IntWritable freq = new IntWritable();
         for (String term : counts.keySet()) {
             // Emit(term t, posting <n,H{t}>)      

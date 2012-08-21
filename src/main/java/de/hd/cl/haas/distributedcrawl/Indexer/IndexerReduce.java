@@ -6,6 +6,7 @@ package de.hd.cl.haas.distributedcrawl.Indexer;
 
 import de.hd.cl.haas.distributedcrawl.common.Posting;
 import de.hd.cl.haas.distributedcrawl.common.PostingList;
+import de.hd.cl.haas.distributedcrawl.common.Term;
 import de.hd.cl.haas.distributedcrawl.common.TextArrayWritable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +17,10 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author haas
  */
-public class IndexerReduce extends Reducer<Text, Posting, Text, PostingList> {
+public class IndexerReduce extends Reducer<Term, Posting, Term, PostingList> {
 
     @Override
-    protected void reduce(Text key, Iterable<Posting> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Term key, Iterable<Posting> values, Context context) throws IOException, InterruptedException {
 
         System.out.println("Reducer: Key is: " + key.toString());
         ArrayList<Posting> pl = new ArrayList<Posting>();
