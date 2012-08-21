@@ -4,6 +4,7 @@
  */
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
+import de.hd.cl.haas.distributedcrawl.common.Posting;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -30,7 +31,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  *
  * @author Michael Haas
  */
-public class IndexerMap extends Mapper<LongWritable, Text, Text, Text> {
+public class IndexerMap extends Mapper<LongWritable, Text, Text, Posting> {
 
     private SequenceFile.Writer writer;
 
@@ -86,14 +87,13 @@ public class IndexerMap extends Mapper<LongWritable, Text, Text, Text> {
             counts.put(term, counts.get(term) + 1);
         }
         Text tTerm = new Text();
+        IntWritable freq = new IntWritable();
         for (String term : counts.keySet()) {
             // Emit(term t, posting <n,H{t}>)      
-            String[] compositeValue = {value.toString(), counts.get(term).toString()};
-            //System.out.println("Out-key: " + term);
-            //System.out.println("Out-value: " + compositeValue);
-            // TODO: is compositeValue properly serialized?
+            freq.set(counts.get(term));
+            Posting p = new Posting(value, freq);
             tTerm.set(term);
-            context.write(new Text(term), new Text(value.toString() + "," + counts.get(term).toString()));
+            context.write(tTerm, p);
         }
     }
 }

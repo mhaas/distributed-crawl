@@ -4,10 +4,11 @@
  */
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
+import de.hd.cl.haas.distributedcrawl.common.Posting;
+import de.hd.cl.haas.distributedcrawl.common.PostingList;
 import de.hd.cl.haas.distributedcrawl.common.TextArrayWritable;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -15,26 +16,26 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author haas
  */
-public class IndexerReduce extends Reducer<Text, Text, Text, TextArrayWritable> {
+public class IndexerReduce extends Reducer<Text, Posting, Text, PostingList> {
 
     @Override
-    protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Text key, Iterable<Posting> values, Context context) throws IOException, InterruptedException {
 
         System.out.println("Reducer: Key is: " + key.toString());
-        ArrayList<Text> memory = new ArrayList<Text>();
-        for (Text composite : values) {
+        ArrayList<Posting> pl = new ArrayList<Posting>();
+        for (Posting p : values) {
             // key is term, value is posting: url,termcount
             //String[] tokens = composite.toString().split(",");
             //String term = tokens[0];
             //String count = tokens[1];
             //context.write(key, composite);
-            memory.add(composite);
+            pl.add(p);
         }
-        TextArrayWritable result = new TextArrayWritable();
+        PostingList result = new PostingList();
         // Ugly. to populate TextArrayWritable, we need to call set()
         // which expects an Array.
         // We need to pass in an array of type Text to get the type right
-        result.set(memory.toArray(new Text[memory.size()]));
+        result.set(pl.toArray(new Text[pl.size()]));
         context.write(key, result);
 
     }
