@@ -4,6 +4,7 @@
  */
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
+import de.hd.cl.haas.distributedcrawl.common.TextArrayWritable;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.hadoop.io.ArrayWritable;
@@ -14,7 +15,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author haas
  */
-public class IndexerReduce extends Reducer<Text, Text, Text, IndexerReduce.TextArrayWritable> {
+public class IndexerReduce extends Reducer<Text, Text, Text, TextArrayWritable> {
 
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
@@ -38,11 +39,4 @@ public class IndexerReduce extends Reducer<Text, Text, Text, IndexerReduce.TextA
 
     }
     // from http://stackoverflow.com/a/8210025
-
-    public static class TextArrayWritable extends ArrayWritable {
-
-        public TextArrayWritable() {
-            super(Text.class);
-        }
-    }
 }
