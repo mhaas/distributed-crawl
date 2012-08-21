@@ -1,7 +1,7 @@
 package de.hd.cl.haas.distributedcrawl;
 
-import de.hd.cl.haas.distributedcrawl.map.IndexerMap;
-import de.hd.cl.haas.distributedcrawl.reduce.IndexerReduce;
+import de.hd.cl.haas.distributedcrawl.Indexer.IndexerMap;
+import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.hd.cl.haas.distributedcrawl.reduce;
+package de.hd.cl.haas.distributedcrawl.Indexer;
 
 import java.io.IOException;
 import java.util.ArrayList;
