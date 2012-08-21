@@ -2,6 +2,7 @@ package de.hd.cl.haas.distributedcrawl;
 
 import de.hd.cl.haas.distributedcrawl.Indexer.IndexerMap;
 import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
+import de.hd.cl.haas.distributedcrawl.common.TextArrayWritable;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -29,7 +30,7 @@ public class App {
         job.setMapOutputValueClass(Text.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IndexerReduce.TextArrayWritable.class);
+        job.setOutputValueClass(TextArrayWritable.class);
 
         job.setJarByClass(IndexerMap.class);
         job.setMapperClass(IndexerMap.class);
