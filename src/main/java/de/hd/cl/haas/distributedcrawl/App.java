@@ -35,6 +35,12 @@ public class App {
         job.setMapperClass(IndexerMap.class);
         job.setReducerClass(IndexerReduce.class);
 
+        // Enable compression for intermediate output
+            // as described indasgerman 
+        //conf.setCompressMapOutput(true);
+        //job.setMapOutputCompressorClass(GzipCodec.class);
+
+
         // TextInputFormat: key is offset in file, value is line
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(SequenceFileOutputFormat.class);
