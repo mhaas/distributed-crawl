@@ -21,14 +21,18 @@ import org.apache.hadoop.io.file.tfile.RawComparable;
 public class Posting extends TextIntWritable implements WritableComparable<Posting> {
     // TODO: Implement RawComparable to make things a bit faster in the sorting phase
 
-    public Posting(String s, Integer i) {
+   /* public Posting(String s, Integer i) {
         super(s, i);
-    }
+    } */
 
-    public Posting(Term t, IntWritable i) {
+    public Posting(URLText t, IntWritable i) {
         super(t, i);
     }
 
+    public URLText getURL() {
+        return new URLText(super.getText());
+    }
+    
     @Override
     public int compareTo(Posting o) {
         // TODO: guard against null?

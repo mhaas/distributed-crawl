@@ -6,6 +6,7 @@ package de.hd.cl.haas.distributedcrawl.Indexer;
 
 import de.hd.cl.haas.distributedcrawl.common.Posting;
 import de.hd.cl.haas.distributedcrawl.common.Term;
+import de.hd.cl.haas.distributedcrawl.common.URLText;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -89,10 +89,11 @@ public class IndexerMap extends Mapper<LongWritable, Term, Term, Posting> {
         }
         Term tTerm = new Term();
         IntWritable freq = new IntWritable();
+        URLText u = new URLText(value);
         for (String term : counts.keySet()) {
             // Emit(term t, posting <n,H{t}>)      
             freq.set(counts.get(term));
-            Posting p = new Posting(value, freq);
+            Posting p = new Posting(u, freq);
             tTerm.set(term);
             context.write(tTerm, p);
         }
