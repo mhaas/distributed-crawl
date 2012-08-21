@@ -16,4 +16,8 @@ public class PostingList extends ArrayWritable {
     public PostingList() {
         super(Posting.class);
     }
+    @Override
+    public Posting[] toArray() {
+        return (Posting[]) super.toArray();
+    }
 }
