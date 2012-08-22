@@ -23,7 +23,7 @@ public class SequenceFileDumper {
 
     public static void main(String[] args) throws IOException {
 
-        if (args.length < 2) {
+        if (args.length < 1) {
             System.err.println("Please supply name of SequenceFile as first argument");
             System.exit(1);
         }
