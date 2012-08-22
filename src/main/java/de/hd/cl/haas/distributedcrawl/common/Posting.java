@@ -25,6 +25,8 @@ public class Posting extends TextLongWritable implements WritableComparable<Post
    /* public Posting(String s, Integer i) {
         super(s, i);
     } */
+    
+    public Posting() {};
 
     public Posting(URLText t, LongWritable i) {
         super(t, i);
