@@ -4,9 +4,7 @@
  */
 package de.hd.cl.haas.distributedcrawl.common;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
 
 /**
  * This class holds a tuple of Term and frequency.

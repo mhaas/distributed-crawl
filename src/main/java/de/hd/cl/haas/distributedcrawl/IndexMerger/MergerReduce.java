@@ -7,7 +7,6 @@ package de.hd.cl.haas.distributedcrawl.IndexMerger;
 import de.hd.cl.haas.distributedcrawl.common.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**

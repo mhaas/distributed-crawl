@@ -5,7 +5,6 @@
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.ArrayWritable;
-import org.apache.hadoop.io.Writable;
 
 /**
  *
