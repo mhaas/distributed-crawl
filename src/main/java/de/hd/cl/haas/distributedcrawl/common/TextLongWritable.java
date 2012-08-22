@@ -36,7 +36,7 @@ public class TextLongWritable implements Writable {
     }
     
     // I assume this would be hidden anyways by ctors with arguments
-    private TextLongWritable() {};
+    public TextLongWritable() {};
     
     /**
      * Constructor.
