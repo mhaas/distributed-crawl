@@ -65,7 +65,7 @@ public class TextToSequenceFile {
                 urlList.add(new WebDBURL(new URLText(url), 0));
             }
             WebDBURLList list = new WebDBURLList();
-            list.fromList(urlList);
+            list.fromCollection(urlList);
             w.append(new URLText(domain), list);
         }
         System.err.println("Finished processing file.");

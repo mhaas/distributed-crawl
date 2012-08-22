@@ -4,6 +4,7 @@
  */
 package de.hd.cl.haas.distributedcrawl.common;
 
+import java.util.Collection;
 import java.util.List;
 import org.apache.hadoop.io.ArrayWritable;
 
@@ -21,8 +22,17 @@ public class WebDBURLList extends ArrayWritable {
         return (WebDBURL[]) super.toArray();
     }
     
-    public void fromList(List<WebDBURL> urls) {
+    public void fromCollection(Collection<WebDBURL> urls) {
         super.set(urls.toArray(new WebDBURL[urls.size()]));
     }
     
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        WebDBURL[] urls = this.toArray();
+        for (int ii = 0; ii < urls.length; ii++) {
+            buf.append(urls[ii]);
+        }
+         return buf.toString();
+    }
 }
