@@ -19,4 +19,19 @@ public class PostingList extends ArrayWritable {
     public Posting[] toArray() {
         return (Posting[]) super.toArray();
     }
+    
+    /**
+     * This is probably somewhat slow, so use with care.
+     * @return 
+     */
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        Posting[] list = this.toArray();
+        for (int ii = 0; ii < list.length; ii++) {
+            buf.append(list[ii].toString());
+            buf.append("\n");
+        }
+        return buf.toString();    
+    }
 }
