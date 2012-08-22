@@ -5,6 +5,7 @@
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 
 /**
@@ -25,10 +26,10 @@ import org.apache.hadoop.io.Text;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class TermCount extends TextIntWritable implements Comparable<TermCount> {
+public class TermCount extends TextLongWritable implements Comparable<TermCount> {
     // TODO: what constraints wrt implementation of Comparable are there? hashcode? equals?
 
-    public TermCount(Term t, IntWritable i) {
+    public TermCount(Term t, LongWritable i) {
         super(t, i);
     }
 

@@ -88,7 +88,7 @@ public class IndexerMap extends Mapper<LongWritable, Term, Term, Posting> {
             counts.put(term, counts.get(term) + 1);
         }
         Term tTerm = new Term();
-        IntWritable freq = new IntWritable();
+        LongWritable freq = new LongWritable();
         URLText u = new URLText(value);
         for (String term : counts.keySet()) {
             // Emit(term t, posting <n,H{t}>)      

@@ -5,6 +5,7 @@
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.file.tfile.RawComparable;
@@ -18,14 +19,14 @@ import org.apache.hadoop.io.file.tfile.RawComparable;
  *
  * @author haas
  */
-public class Posting extends TextIntWritable implements WritableComparable<Posting> {
+public class Posting extends TextLongWritable implements WritableComparable<Posting> {
     // TODO: Implement RawComparable to make things a bit faster in the sorting phase
 
    /* public Posting(String s, Integer i) {
         super(s, i);
     } */
 
-    public Posting(URLText t, IntWritable i) {
+    public Posting(URLText t, LongWritable i) {
         super(t, i);
     }
 

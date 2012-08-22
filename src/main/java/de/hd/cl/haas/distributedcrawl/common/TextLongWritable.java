@@ -8,6 +8,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 
@@ -21,21 +22,21 @@ import org.apache.hadoop.io.Writable;
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  * 
  */
-public class TextIntWritable implements Writable {
+public class TextLongWritable implements Writable {
 
     private Text text = new Text();
-    private IntWritable value = new IntWritable();
+    private LongWritable value = new LongWritable();
     
     
     public Text getText(){
         return this.text;
     }
-    public IntWritable getValue() {
+    public LongWritable getValue() {
         return this.value;
     }
     
     // I assume this would be hidden anyways by ctors with arguments
-    private TextIntWritable() {};
+    private TextLongWritable() {};
     
     /**
      * Constructor.
@@ -44,7 +45,7 @@ public class TextIntWritable implements Writable {
      * @param i IntWritable instance
      */
    
-    public TextIntWritable(Text t, IntWritable i) {
+    public TextLongWritable(Text t, LongWritable i) {
         this.text = t;
         this.value = i;
     }
@@ -56,9 +57,9 @@ public class TextIntWritable implements Writable {
      * @param s String instance
      * @param i Integer instance 
      */
-    public TextIntWritable(String s, Integer i) {
+    public TextLongWritable(String s, Integer i) {
         this.text = new Text(s);
-        this.value = new IntWritable(i);
+        this.value = new LongWritable(i);
     }
     
     @Override
