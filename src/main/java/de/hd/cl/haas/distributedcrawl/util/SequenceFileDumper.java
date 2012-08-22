@@ -27,10 +27,15 @@ public class SequenceFileDumper {
             System.err.println("Please supply name of SequenceFile as first argument");
             System.exit(1);
         }
-        String uri = args[0];
+        String file = args[0];
+        if (! (file.startsWith("hdfs:") || file.startsWith("file:"))) {
+            String curDir = System.getProperty("user.dir");
+            file = "file://" + curDir + "/" + file;
+        }
+        System.err.println("Printing URI: " + file);
         Configuration conf = new Configuration();
-        FileSystem fs = FileSystem.get(URI.create(uri), conf);
-        Path path = new Path(uri);
+        FileSystem fs = FileSystem.get(URI.create(file), conf);
+        Path path = new Path(file);
         SequenceFile.Reader reader = null;
         try {
             reader = new SequenceFile.Reader(fs, path, conf);
