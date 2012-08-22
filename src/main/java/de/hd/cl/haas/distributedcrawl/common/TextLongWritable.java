@@ -74,4 +74,9 @@ public class TextLongWritable implements Writable {
         // this.text.set(Text.readString(in));
         this.value.readFields(in);
     }
+    
+    @Override
+    public String toString() {
+        return this.text.toString() + ";" + this.value.toString();
+    }
 }
