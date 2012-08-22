@@ -21,6 +21,10 @@ import org.apache.hadoop.io.LongWritable;
  */
 public class WebDBURL extends TextLongWritable {
     
+    public WebDBURL() {
+        super();
+    }
+    
     public WebDBURL(URLText url, long date) {
         super(url, new LongWritable(date));
     }
@@ -38,9 +42,5 @@ public class WebDBURL extends TextLongWritable {
     
     public Date getDate() {
         return new Date(super.getValue().get());
-    }
-
-   
-    
-    
+    } 
 }
