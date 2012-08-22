@@ -4,6 +4,8 @@
  */
 package de.hd.cl.haas.distributedcrawl.common;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.apache.hadoop.io.Text;
 
 /**
@@ -25,6 +27,10 @@ public class URLText extends Text {
     }
 
     public URLText() {
+    }
+    
+    public URL getURL() throws MalformedURLException {
+        return new URL(this.toString());
     }
     
     
