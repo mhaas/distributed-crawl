@@ -24,7 +24,7 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
  */
 public class MergerPartitioner extends Partitioner<TermCount, URLText> {
 
-    HashPartitioner<Term, URLText> hp = new HashPartitioner<Term, URLText>();
+    private HashPartitioner<Term, URLText> hp = new HashPartitioner<Term, URLText>();
  
     @Override
     public int getPartition(TermCount key, URLText value, int numPartitions) {
