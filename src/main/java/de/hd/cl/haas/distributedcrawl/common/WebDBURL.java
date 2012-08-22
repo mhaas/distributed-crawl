@@ -4,6 +4,8 @@
  */
 package de.hd.cl.haas.distributedcrawl.common;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -25,6 +27,17 @@ public class WebDBURL extends TextLongWritable {
    
     public WebDBURL(URLText url, Date d) {
         this(url, d.getTime());
+    }
+    
+    public URLText getURLText() {
+        return new URLText(super.getText());
+    }
+    public URL getURL() throws MalformedURLException {
+        return this.getURLText().getURL();
+    }
+    
+    public Date getDate() {
+        return new Date(super.getValue().get());
     }
 
    
