@@ -5,6 +5,7 @@
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.WritableComparable;
 
 /**
  * This class holds a tuple of Term and frequency.
@@ -24,7 +25,7 @@ import org.apache.hadoop.io.LongWritable;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class TermCount extends TextLongWritable implements Comparable<TermCount> {
+public class TermCount extends TextLongWritable implements Comparable<TermCount>, WritableComparable<TermCount> {
     // TODO: what constraints wrt implementation of Comparable are there? hashcode? equals?
 
     public TermCount(Term t, LongWritable i) {
