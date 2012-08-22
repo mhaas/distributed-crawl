@@ -23,20 +23,26 @@ import org.apache.hadoop.io.SequenceFile;
  */
 public class TextToSequenceFile {
 
+    private static void printFileNotExist() {
+        System.err.println("File does not exist");
+    }
     private static void printUsage() {
         System.err.println("Please provide seed text file as first argument.");
     }
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
 
-        if (args.length < 2) {
+        if (args.length < 1) {
             TextToSequenceFile.printUsage();
+             System.exit(1);
         }
 
-        String in = args[1];
+        String in = args[0];
         File inFile = new File(in);
         if (!inFile.exists()) {
+            TextToSequenceFile.printFileNotExist();
             TextToSequenceFile.printUsage();
+            System.exit(2);
         }
 
         Configuration conf = new Configuration();
