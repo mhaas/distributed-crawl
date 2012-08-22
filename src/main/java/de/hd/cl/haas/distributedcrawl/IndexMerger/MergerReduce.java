@@ -17,6 +17,15 @@ import org.apache.hadoop.mapreduce.Reducer;
  * It also merges output from previous run, thus updating the index.
  *
  * It also sorts a posting list by frequency while eliminating duplicates.
+ * 
+ * The benefit of sorting the postings by frequency is not entirely clear to me anymore.
+ * The only obvious benefit is the ease of duplicate elimination.
+ * 
+ * The MapReduce book by by Jimmy Lin and Chris Dyer describe that the postings
+ * should be sorted by document id, not by frequency. Sorting by document ID
+ * has the benefit of allowing quick access to specific IDs by doing a binary search.
+ * 
+ * TODO: re-read chapter 4 in MapReduce book.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
