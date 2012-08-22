@@ -18,7 +18,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 
@@ -46,7 +45,14 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
         if (this.writer == null) {
             // TODO: update with correct class?
             FileSystem fs = FileSystem.get(context.getConfiguration());
-            Path p = new Path(context.getWorkingDirectory(), "webdb-1");
+            int id = context.getJobID().getId();
+            Path outPath = new Path(context.getWorkingDirectory(), "fresh-urls");
+            if (!fs.exists(outPath)) {
+                fs.mkdirs(outPath);
+            }
+            Path p = new Path(outPath, "shard-" + id + ".dat");
+            
+            
             // TODO: wrap writer in its own class to hide serialized class details?
             this.writer = SequenceFile.createWriter(fs, context.getConfiguration(), p, URLText.class, WebDBURL.class);
             System.err.println("Writer initialized.");
@@ -64,9 +70,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             // is relative domain?
             if (target.startsWith("/")) {
                 target = domain.toString() + target;
+                // TODO: oops, domain does not have scheme.
+                target = "http://" + target;
             }
             if (!target.startsWith("http")) {
                 System.out.println("URL with unsupported scheme.");
+                continue;
             }
             // we use the URL of the current document as key, but I don't plan
             // on using this in the DB
