@@ -1,8 +1,10 @@
-package de.hd.cl.haas.distributedcrawl.IndexMerger;
+    package de.hd.cl.haas.distributedcrawl.IndexMerger;
 
 
 import de.hd.cl.haas.distributedcrawl.common.PostingList;
 import de.hd.cl.haas.distributedcrawl.common.Term;
+import de.hd.cl.haas.distributedcrawl.common.TermCount;
+import de.hd.cl.haas.distributedcrawl.common.URLText;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -24,8 +26,8 @@ public class IndexMergerApp {
 
         Job job = new Job(conf, "Indexer");
 
-        job.setMapOutputKeyClass(Term.class);
-        job.setMapOutputValueClass(PostingList.class);
+        job.setMapOutputKeyClass(TermCount.class);
+        job.setMapOutputValueClass(URLText.class);
 
         job.setOutputKeyClass(Term.class);
         job.setOutputValueClass(PostingList.class);
