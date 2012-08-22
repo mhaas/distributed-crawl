@@ -17,17 +17,20 @@ import org.apache.hadoop.io.WritableComparable;
  *
  * This has the effect that the key arrive in the right order so the index is
  * sorted by key while additionally sorting the postings list for the term.
- * 
- * This is used in conjunction with @MergerPartitioner to ensure that keys
- * with the same term arrive at the same reducer.
- * 
- * If multiple reducers are used, the result files are probably easily concatenated (?!).
+ *
+ * This is used in conjunction with @MergerPartitioner to ensure that keys with
+ * the same term arrive at the same reducer.
+ *
+ * If multiple reducers are used, the result files are probably easily
+ * concatenated (?!).
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public class TermCount extends TextLongWritable implements Comparable<TermCount>, WritableComparable<TermCount> {
     // TODO: what constraints wrt implementation of Comparable are there? hashcode? equals?
 
+    public TermCount() {};
+    
     public TermCount(Term t, LongWritable i) {
         super(t, i);
     }
@@ -42,7 +45,7 @@ public class TermCount extends TextLongWritable implements Comparable<TermCount>
         if (c1 != 0) {
             return c1;
         } else {
-          return this.getValue().compareTo(o.getValue());  
+            return this.getValue().compareTo(o.getValue());
         }
     }
 }
