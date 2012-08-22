@@ -7,7 +7,6 @@ package de.hd.cl.haas.distributedcrawl.Indexer;
 import de.hd.cl.haas.distributedcrawl.common.Posting;
 import de.hd.cl.haas.distributedcrawl.common.PostingList;
 import de.hd.cl.haas.distributedcrawl.common.Term;
-import de.hd.cl.haas.distributedcrawl.common.TextArrayWritable;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.hadoop.io.Text;
@@ -36,7 +35,7 @@ public class IndexerReduce extends Reducer<Term, Posting, Term, PostingList> {
         // Ugly. to populate TextArrayWritable, we need to call set()
         // which expects an Array.
         // We need to pass in an array of type Text to get the type right
-        result.set(pl.toArray(new Text[pl.size()]));
+        result.set(pl.toArray(new Posting[pl.size()]));
         context.write(key, result);
 
     }
