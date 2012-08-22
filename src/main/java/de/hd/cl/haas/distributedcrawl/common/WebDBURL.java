@@ -19,7 +19,7 @@ import org.apache.hadoop.io.LongWritable;
  */
 public class WebDBURL extends TextLongWritable {
     
-    private WebDBURL(URLText url, long date) {
+    public WebDBURL(URLText url, long date) {
         super(url, new LongWritable(date));
     }
    
