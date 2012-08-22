@@ -55,8 +55,9 @@ public class TextToSequenceFile {
         SequenceFile.Writer w = SequenceFile.createWriter(fs, conf, path, URLText.class, WebDBURLList.class);
         BufferedReader r = new BufferedReader(new FileReader(inFile));
         String line;
-        ArrayList<WebDBURL> urlList = new ArrayList<WebDBURL>();
+        
         while ((line = r.readLine()) != null) {
+            ArrayList<WebDBURL> urlList = new ArrayList<WebDBURL>();
             String[] tokens = line.split("\t");
             String domain = tokens[0];
             for (int ii = 1; ii < tokens.length; ii++) {
