@@ -46,8 +46,9 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
         if (this.writer == null) {
             // TODO: update with correct class?
             FileSystem fs = FileSystem.get(context.getConfiguration());
-            Path p = new Path(context.getWorkingDirectory(), "foo");
-            this.writer = SequenceFile.createWriter(fs, context.getConfiguration(), p, Text.class, Text.class);
+            Path p = new Path(context.getWorkingDirectory(), "webdb-1");
+            // TODO: wrap writer in its own class to hide serialized class details?
+            this.writer = SequenceFile.createWriter(fs, context.getConfiguration(), p, URLText.class, WebDBURL.class);
             System.err.println("Writer initialized.");
         }
     }
@@ -71,7 +72,8 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             // on using this in the DB
             // TODO: this is stupid - might make more sense to use the
             // domain of the link so we can easily sort for that later...
-            this.writer.append(domain, target);
+            WebDBURL u = new WebDBURL(new URLText(target), (new Date()).getTime());
+            this.writer.append(domain, u);
         }
     }
 
