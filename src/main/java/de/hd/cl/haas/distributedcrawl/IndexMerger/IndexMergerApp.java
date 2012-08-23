@@ -34,7 +34,7 @@ public class IndexMergerApp implements HasJob {
     public Job getJob() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
 
-        Job job = new Job(conf, "Indexer");
+        Job job = new Job(conf, "IndexMerger");
 
         job.setMapOutputKeyClass(TermCount.class);
         job.setMapOutputValueClass(URLText.class);
