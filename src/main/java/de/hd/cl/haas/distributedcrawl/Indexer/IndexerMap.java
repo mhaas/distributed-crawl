@@ -177,7 +177,9 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             InputStream stream;
             try {
                 url.openConnection();
+                
                 stream = url.openStream();
+                
             } catch (java.io.FileNotFoundException e) {
                 System.err.println("Caught FileNotFoundException when opening URL " + dbURL);
                 e.printStackTrace();
