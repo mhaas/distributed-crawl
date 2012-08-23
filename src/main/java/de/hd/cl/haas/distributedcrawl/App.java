@@ -1,9 +1,14 @@
 package de.hd.cl.haas.distributedcrawl;
 
+import de.hd.cl.haas.distributedcrawl.IndexMerger.IndexMergerApp;
+import de.hd.cl.haas.distributedcrawl.Indexer.IndexerApp;
 import de.hd.cl.haas.distributedcrawl.Indexer.IndexerMap;
 import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
+import de.hd.cl.haas.distributedcrawl.WebDBMerger.WebDBMergerApp;
 import java.io.IOException;
+import java.net.URI;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -19,31 +24,117 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class App {
 
-    
+    public static final String WEBDB_DIR = "webdb";
+    public static final String WEBDB_MERGED_DIR = "webdb-merged";
+    public static final String FRESHURLS_DIR = "fresh-urls";
+    public static final String INDEX_RAW_DIR = "index-raw";
+    public static final String INDEX_SORTED_DIR = "index-sorted";
+    // index from previous run
+    public static final String INDEX_OLD_DIR = "index-old";
+    public static final int ITERATIONS = 3;
+
+    private static void handleStatus(String job, boolean success, int iteration) {
+        if (!success) {
+            System.err.println("Job " + job + " failed in iteration " + iteration + ".");
+            System.exit(1);
+        } else {
+            System.err.println("Job " + job + " successful in iteration " + iteration + ".");
+        }
+    }
+
+    private static void handleStatus(String job, boolean success) {
+        handleStatus(job, success, -1);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(URI.create(WEBDB_DIR), conf);
 
-        Job job = new Job(conf, "Indexer");
 
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(Text.class);
+        Path freshURLs = new Path(FRESHURLS_DIR);
+        Path rawIndex = new Path(INDEX_RAW_DIR);
 
-        job.setOutputKeyClass(Text.class);
-     //   job.setOutputValueClass(.class);
+        Path webdb;
+        Path webdbMerged;
+        Path sortedIndex;
+        Path oldIndex;
 
-        job.setJarByClass(IndexerMap.class);
-        job.setMapperClass(IndexerMap.class);
-        job.setReducerClass(IndexerReduce.class);
+        for (int ii = 0; ii < ITERATIONS; ii++) {
 
-       
 
-        // TextInputFormat: key is offset in file, value is line
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+            // Indexer:
+            //  - reads from WEBDB_DIR
+            //  - writes into INDEX_RAW_DIR and FRESH_URLS_DIR
+            // IndexMerger:
+            // - reads from INDEX_RAW_DIR and INDEX_OLD_DIR
+            // - writes into INDEX_SORTED_DIR
+            // WebDBMerger
+            // - reads from WEBDB_DIR and FRESH_URLS_DIR
+            // - writes into WEB_MERGED_DIR
 
-        job.waitForCompletion(true);
+
+
+            // flip-flop input and output directories on every run
+            if (ii % 2 == 0) {
+                System.err.println("Flipping directories in iteration " + ii);
+                webdb = new Path(WEBDB_DIR);
+                webdbMerged = new Path(WEBDB_MERGED_DIR);
+                sortedIndex = new Path(INDEX_SORTED_DIR);
+                oldIndex = new Path(INDEX_OLD_DIR);
+
+
+            } else {
+                System.err.println("Flipping directories in iteration " + ii);
+
+                webdb = new Path(WEBDB_MERGED_DIR);
+                webdbMerged = new Path(WEBDB_DIR);
+                sortedIndex = new Path(INDEX_OLD_DIR);
+                oldIndex = new Path(INDEX_SORTED_DIR);
+            }
+            // oldIndex always is a pointer to the input directory for IndexMerger
+            // We need to make sure it exists in the first iteration or
+            // Hadoop will error out
+            if (! fs.exists(oldIndex)) {
+                fs.mkdirs(oldIndex);
+            }
+            
+            fs.delete(freshURLs, true);
+            fs.mkdirs(freshURLs);
+            fs.delete(rawIndex, true);
+            //fs.mkdirs(rawIndex);
+
+            // delete old stuff, we have data of previous run in oldInde
+            fs.delete(sortedIndex, true);
+
+
+            Job indexerJob = new IndexerApp().getJob();
+            FileInputFormat.addInputPath(indexerJob, webdb);
+            FileOutputFormat.setOutputPath(indexerJob, rawIndex);
+
+            boolean success = indexerJob.waitForCompletion(true);
+            handleStatus(indexerJob.getJobName(), success, ii);
+
+
+            Job indexMergerJob = new IndexMergerApp().getJob();
+            FileInputFormat.addInputPath(indexMergerJob, rawIndex);
+            FileInputFormat.addInputPath(indexMergerJob, oldIndex);
+
+            FileOutputFormat.setOutputPath(indexMergerJob, sortedIndex);
+
+            success = indexMergerJob.waitForCompletion(true);
+            handleStatus(indexMergerJob.getJobName(), success, ii);
+
+            Job webDBMergerJob = new WebDBMergerApp().getJob();
+            FileInputFormat.addInputPath(webDBMergerJob, webdb);
+            FileInputFormat.addInputPath(webDBMergerJob, freshURLs);
+            FileOutputFormat.setOutputPath(webDBMergerJob, webdbMerged);
+            success = webDBMergerJob.waitForCompletion(true);
+            handleStatus(webDBMergerJob.getJobName(), success, ii);
+        }
+
+
+
+
     }
 }
