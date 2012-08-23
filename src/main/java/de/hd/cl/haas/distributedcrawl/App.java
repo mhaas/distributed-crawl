@@ -14,6 +14,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -106,13 +107,14 @@ public class App {
 
             // delete old stuff, we have data of previous run in oldIndex
             fs.delete(sortedIndex, true);
-            // delete old stuff, we have data of previous run (webdb + freshurls) in webdbMerged
-            fs.delete(webdb, true);
+            // delete old stuff, we have data of previous run (webdbMerged + freshurls) in webdb
+            fs.delete(webdbMerged, true);
 
 
             Job indexerJob = new IndexerApp().getJob();
-            //job.setMapperClass(MultithreadedMapper.class);
-            //conf.set("mapred.map.multithreadedrunner.class", WebGraphMapper.class.getCanonicalName());
+            conf.setInt("mapred.map.tasks", 10);
+            //indexerJob.setMapperClass(MultithreadedMapper.class);
+            //conf.set("mapred.map.multithreadedrunner.class", IndexerMap.class.getCanonicalName());
             //conf.set("mapred.map.multithreadedrunner.threads", "8");
             FileInputFormat.addInputPath(indexerJob, webdb);
             FileOutputFormat.setOutputPath(indexerJob, rawIndex);
