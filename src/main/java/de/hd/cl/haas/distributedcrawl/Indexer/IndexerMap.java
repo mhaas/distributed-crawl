@@ -8,6 +8,7 @@ import de.hd.cl.haas.distributedcrawl.App;
 import de.hd.cl.haas.distributedcrawl.common.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import net.htmlparser.jericho.Element;
@@ -57,12 +58,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
     }
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @param domain Host of current URL we're crawling
      * @param source
-     * @throws IOException 
+     * @throws IOException
      */
     private void processLinks(URLText domain, Source source) throws IOException {
         List<Element> anchorElements = source.getAllElements("a");
@@ -84,27 +85,40 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             }
             // we use the URL of the current document as key, but I don't plan
             // on using this in the DB
-            // TODO: this is stupid - might make more sense to use the
-            // domain of the link so we can easily sort for that later...
-            WebDBURL u = new WebDBURL(new URLText(target), (new Date()).getTime());
+            // We use date 0 for new URLs.
+            // If we already have seen this URL in the database, we
+            // will find it during the WebDBMerger stage and eliminate
+            // the duplicate
+            // We also write out the currently crawled URL with the current
+            // date to have an up-to-date entry in the database
+            WebDBURL u = new WebDBURL(new URLText(target), 0);
             // we use WebURLList format even for a single URL to have an uniform
             // file format for use with @WebDBMerger.
             // The WebDB-ish format we write out here however has duplicate keys
             // and even duplicate URLs
             // etc, so it's not usable as input for @Indexer.. or is it?
-            
+
             // Duplicate keys (i.e. domains) are bad because it might cause too much
             // traffic and unnecessary crawls
-            
+
             // TODO: what is the invariant on keys in SequenceFile or SequenceFileInputFormat
 
-            ArrayList<WebDBURL> temp = new ArrayList<WebDBURL>();
-            temp.add(u);
-            WebDBURLList l = new WebDBURLList();
-            l.fromCollection(temp);
-            String domainOfNewURL = u.getURL().getHost();
-            this.writer.append(new URLText(domainOfNewURL), l);
+            this.writeDBURL(u);
         }
+    }
+
+    private void writeDBURL(WebDBURL url) throws MalformedURLException, IOException {
+        String domainOfNewURL = url.getURL().getHost();
+        this.writeDBURL(new URLText(domainOfNewURL), url);
+    }
+
+    private void writeDBURL(URLText host, WebDBURL url) throws IOException {
+        ArrayList<WebDBURL> temp = new ArrayList<WebDBURL>();
+        temp.add(url);
+        WebDBURLList l = new WebDBURLList();
+        l.fromCollection(temp);
+        this.writer.append(host, l);
+
     }
 
     private Map<String, Integer> countTokens(String[] tokens) {
@@ -127,6 +141,17 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
     protected void map(URLText key, WebDBURLList value, Context context) throws IOException, InterruptedException {
 
         System.out.println("key is " + key.toString());
+        
+        // Write current URL to WebDB with crawl date.
+        // TODO: this deprecates the need to merge two
+        // separate index directories as the new index
+        // will have all entries from the old index.. unless
+        // we only write out URLs we actually crawl, as some URLs
+        // will need to be skipped because they're not old enough.
+        
+        // So, to sum up: we still need to merge old and new index
+        // as the new index (fresh-urls) only contains a subset of
+        // old-index that was fresh enough to be crawled.
 
         WebDBURL[] urls = value.toArray();
         for (int ii = 0; ii < urls.length; ii++) {
@@ -138,6 +163,8 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 System.err.println("URL " + dbURL.getText() + " is not old enough, not crawling");
                 continue;
             }
+            WebDBURL newEntry = new WebDBURL(dbURL.getURLText(), new Date());
+            this.writeDBURL(key, newEntry);
 
             URL url = dbURL.getURL();
             url.openConnection();
