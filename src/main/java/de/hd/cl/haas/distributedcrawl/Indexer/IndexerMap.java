@@ -8,10 +8,7 @@ import de.hd.cl.haas.distributedcrawl.common.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
 import org.apache.hadoop.fs.FileSystem;
@@ -19,7 +16,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.mapreduce.Mapper;
-
 
 /**
  *
@@ -51,14 +47,22 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 fs.mkdirs(outPath);
             }
             Path p = new Path(outPath, "shard-" + id + ".dat");
-            
-            
+
+
             // TODO: wrap writer in its own class to hide serialized class details?
-            this.writer = SequenceFile.createWriter(fs, context.getConfiguration(), p, URLText.class, WebDBURL.class);
+            this.writer = SequenceFile.createWriter(fs, context.getConfiguration(), p, URLText.class, WebDBURLList.class);
             System.err.println("Writer initialized.");
         }
     }
 
+    /**
+     * 
+     * 
+     * 
+     * @param domain Host of current URL we're crawling
+     * @param source
+     * @throws IOException 
+     */
     private void processLinks(URLText domain, Source source) throws IOException {
         List<Element> anchorElements = source.getAllElements("a");
         for (Element anchorElement : anchorElements) {
@@ -82,7 +86,23 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             // TODO: this is stupid - might make more sense to use the
             // domain of the link so we can easily sort for that later...
             WebDBURL u = new WebDBURL(new URLText(target), (new Date()).getTime());
-            this.writer.append(domain, u);
+            // we use WebURLList format even for a single URL to have an uniform
+            // file format for use with @WebDBMerger.
+            // The WebDB-ish format we write out here however has duplicate keys
+            // and even duplicate URLs
+            // etc, so it's not usable as input for @Indexer.. or is it?
+            
+            // Duplicate keys (i.e. domains) are bad because it might cause too much
+            // traffic and unnecessary crawls
+            
+            // TODO: what is the invariant on keys in SequenceFile or SequenceFileInputFormat
+
+            ArrayList<WebDBURL> temp = new ArrayList<WebDBURL>();
+            temp.add(u);
+            WebDBURLList l = new WebDBURLList();
+            l.fromCollection(temp);
+            String domainOfNewURL = u.getURL().getHost();
+            this.writer.append(new URLText(domainOfNewURL), l);
         }
     }
 
