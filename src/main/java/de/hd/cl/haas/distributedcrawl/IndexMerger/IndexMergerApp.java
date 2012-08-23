@@ -1,6 +1,6 @@
-    package de.hd.cl.haas.distributedcrawl.IndexMerger;
+package de.hd.cl.haas.distributedcrawl.IndexMerger;
 
-
+import de.hd.cl.haas.distributedcrawl.HasJob;
 import de.hd.cl.haas.distributedcrawl.common.PostingList;
 import de.hd.cl.haas.distributedcrawl.common.Term;
 import de.hd.cl.haas.distributedcrawl.common.TermCount;
@@ -18,10 +18,20 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
  * Hello world!
  *
  */
-public class IndexMergerApp {
+public class IndexMergerApp implements HasJob {
 
-    
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+        Job job = new IndexMergerApp().getJob();
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        job.waitForCompletion(true);
+
+
+    }
+
+    @Override
+    public Job getJob() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
 
         Job job = new Job(conf, "Indexer");
@@ -37,13 +47,10 @@ public class IndexMergerApp {
         job.setPartitionerClass(MergerPartitioner.class);
         job.setReducerClass(MergerReduce.class);
 
-       
+
         job.setInputFormatClass(SequenceFileInputFormat.class);
         job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-        job.waitForCompletion(true);
+        return job;
     }
 }

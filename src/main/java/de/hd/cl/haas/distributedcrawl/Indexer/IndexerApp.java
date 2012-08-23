@@ -1,5 +1,6 @@
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
+import de.hd.cl.haas.distributedcrawl.HasJob;
 import de.hd.cl.haas.distributedcrawl.common.Posting;
 import de.hd.cl.haas.distributedcrawl.common.PostingList;
 import de.hd.cl.haas.distributedcrawl.common.Term;
@@ -16,12 +17,14 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
  * Hello world!
  *
  */
-public class IndexerApp {
+public class IndexerApp implements HasJob {
 
-    
-    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+    public IndexerApp() {
+    }
+
+    @Override
+    public Job getJob() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
-
         Job job = new Job(conf, "Indexer");
 
         job.setMapOutputKeyClass(Term.class);
@@ -34,13 +37,16 @@ public class IndexerApp {
         job.setMapperClass(IndexerMap.class);
         job.setReducerClass(IndexerReduce.class);
 
+        return job;
+    }
 
-        job.setInputFormatClass(SequenceFileInputFormat.class);
-        job.setOutputFormatClass(SequenceFileOutputFormat.class);
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 
+        HasJob h = new IndexerApp();
+        Job job = h.getJob();
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
         job.waitForCompletion(true);
+
     }
 }
