@@ -36,6 +36,8 @@ public class IndexerApp implements HasJob {
         job.setJarByClass(IndexerApp.class);
         job.setMapperClass(IndexerMap.class);
         job.setReducerClass(IndexerReduce.class);
+        job.setInputFormatClass(SequenceFileInputFormat.class);
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
 
         return job;
     }
