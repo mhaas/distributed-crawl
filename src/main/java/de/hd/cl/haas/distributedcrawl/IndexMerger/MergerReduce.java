@@ -26,6 +26,20 @@ import org.apache.hadoop.mapreduce.Reducer;
  * has the benefit of allowing quick access to specific IDs by doing a binary search.
  * 
  * TODO: re-read chapter 4 in MapReduce book.
+ * 
+ * As a stop-gap measure, we can implement in-memory sorting of the list by document ID.
+ * Assuming the number of number of URLs per domain is tractable (similar assumption in
+ * @see{WebDBMergerReducer})
+ * 
+ * In the end, we need to do two things:
+ * - eliminate duplicate URLs (while retaining correct last-fetched date)
+ * - sort URLs (document IDs)
+ * 
+ * We can do both by applying a key-value conversion pattern where we
+ * emit (Term,URL) as key and (Count) as value.
+ * This allows us to easily retain the correct last-fetched date.
+ * 
+ * TODO: this is very similar to what we do in @WebDBMergerApp.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
