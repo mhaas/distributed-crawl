@@ -83,6 +83,13 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 System.out.println("URL with unsupported scheme.");
                 continue;
             }
+            // if target contains anchor inside page, remove part afterwards
+            // we only crawl whole pages and the IndexMerger will remove
+            // duplicates
+            int offset;
+            if ((offset = target.indexOf("#")) > -1) {
+                target = target.substring(0, offset);
+            }
             // we use the URL of the current document as key, but I don't plan
             // on using this in the DB
             // We use date 0 for new URLs.
@@ -141,14 +148,14 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
     protected void map(URLText key, WebDBURLList value, Context context) throws IOException, InterruptedException {
 
         System.out.println("key is " + key.toString());
-        
+
         // Write current URL to WebDB with crawl date.
         // TODO: this deprecates the need to merge two
         // separate index directories as the new index
         // will have all entries from the old index.. unless
         // we only write out URLs we actually crawl, as some URLs
         // will need to be skipped because they're not old enough.
-        
+
         // So, to sum up: we still need to merge old and new index
         // as the new index (fresh-urls) only contains a subset of
         // old-index that was fresh enough to be crawled.
@@ -167,7 +174,11 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             this.writeDBURL(key, newEntry);
 
             URL url = dbURL.getURL();
-            url.openConnection();
+            try {
+                url.openConnection();
+            } catch (java.io.FileNotFoundException e) {
+                System.err.println("Caught FileNotFoundException when opening URL " + dbURL);
+            }
             InputStream stream = url.openStream();
             Source source = new Source(stream);
             source.fullSequentialParse();
