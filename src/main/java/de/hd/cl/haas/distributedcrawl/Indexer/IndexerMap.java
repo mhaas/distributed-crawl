@@ -83,7 +83,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 System.out.println("URL with unsupported scheme.");
                 continue;
             }
-            // if target contains anchor inside page, remove part afterwards
+            // if target contains fragment, strip it
             // we only crawl whole pages and the IndexMerger will remove
             // duplicates
             int offset;
@@ -166,30 +166,28 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             WebDBURL dbURL = urls[ii];
             Date d = dbURL.getDate();
             Date now = new Date();
-            if ((now.getTime() - d.getTime()) < 300 * 1000) {
+            if ((now.getTime() - d.getTime()) < MIN_AGE * 1000) {
                 System.err.println("URL " + dbURL.getText() + " is not old enough, not crawling");
                 continue;
             }
-            WebDBURL newEntry = new WebDBURL(dbURL.getURLText(), new Date());
-            this.writeDBURL(key, newEntry);
+
 
             URL url = dbURL.getURL();
             InputStream stream;
             try {
                 url.openConnection();
-                
+
                 stream = url.openStream();
-                
-            } catch (java.io.FileNotFoundException e) {
-                System.err.println("Caught FileNotFoundException when opening URL " + dbURL);
-                e.printStackTrace();
-                continue;
-                
-            } catch (java.net.UnknownHostException e) {
-                System.err.println("Caught UnknownHostException when opening URL " + dbURL);
+
+            } catch (java.io.IOException e) {
+                System.err.println("Caught IOException when opening URL " + dbURL);
                 e.printStackTrace();
                 continue;
             }
+            WebDBURL newEntry = new WebDBURL(dbURL.getURLText(), new Date());
+            this.writeDBURL(key, newEntry);
+
+
             Source source = new Source(stream);
             source.fullSequentialParse();
             this.processLinks(key, source);
