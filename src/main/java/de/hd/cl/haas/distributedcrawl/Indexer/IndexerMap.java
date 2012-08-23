@@ -180,6 +180,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 stream = url.openStream();
             } catch (java.io.FileNotFoundException e) {
                 System.err.println("Caught FileNotFoundException when opening URL " + dbURL);
+                e.printStackTrace();
+                continue;
+                
+            } catch (java.net.UnknownHostException e) {
+                System.err.println("Caught UnknownHostException when opening URL " + dbURL);
+                e.printStackTrace();
                 continue;
             }
             Source source = new Source(stream);
