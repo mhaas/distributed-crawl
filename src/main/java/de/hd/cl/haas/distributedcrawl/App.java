@@ -95,20 +95,25 @@ public class App {
             // oldIndex always is a pointer to the input directory for IndexMerger
             // We need to make sure it exists in the first iteration or
             // Hadoop will error out
-            if (! fs.exists(oldIndex)) {
+            if (!fs.exists(oldIndex)) {
                 fs.mkdirs(oldIndex);
             }
-            
+
             fs.delete(freshURLs, true);
             fs.mkdirs(freshURLs);
             fs.delete(rawIndex, true);
             //fs.mkdirs(rawIndex);
 
-            // delete old stuff, we have data of previous run in oldInde
+            // delete old stuff, we have data of previous run in oldIndex
             fs.delete(sortedIndex, true);
+            // delete old stuff, we have data of previous run (webdb + freshurls) in webdbMerged
+            fs.delete(webdb, true);
 
 
             Job indexerJob = new IndexerApp().getJob();
+            //job.setMapperClass(MultithreadedMapper.class);
+            //conf.set("mapred.map.multithreadedrunner.class", WebGraphMapper.class.getCanonicalName());
+            //conf.set("mapred.map.multithreadedrunner.threads", "8");
             FileInputFormat.addInputPath(indexerJob, webdb);
             FileOutputFormat.setOutputPath(indexerJob, rawIndex);
 
