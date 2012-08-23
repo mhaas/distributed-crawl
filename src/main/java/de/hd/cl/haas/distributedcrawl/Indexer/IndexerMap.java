@@ -4,6 +4,7 @@
  */
 package de.hd.cl.haas.distributedcrawl.Indexer;
 
+import de.hd.cl.haas.distributedcrawl.App;
 import de.hd.cl.haas.distributedcrawl.common.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +43,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             // TODO: update with correct class?
             FileSystem fs = FileSystem.get(context.getConfiguration());
             int id = context.getJobID().getId();
-            Path outPath = new Path(context.getWorkingDirectory(), "fresh-urls");
+            Path outPath = new Path(context.getWorkingDirectory(), App.FRESHURLS_DIR);
             if (!fs.exists(outPath)) {
                 fs.mkdirs(outPath);
             }
