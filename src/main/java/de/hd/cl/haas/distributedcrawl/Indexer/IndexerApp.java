@@ -25,6 +25,7 @@ public class IndexerApp implements HasJob {
     @Override
     public Job getJob() throws IOException, InterruptedException {
         Configuration conf = new Configuration();
+        conf.setInt("mapred.map.tasks", 10);
         Job job = new Job(conf, "Indexer");
 
         job.setMapOutputKeyClass(Term.class);
