@@ -174,12 +174,14 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             this.writeDBURL(key, newEntry);
 
             URL url = dbURL.getURL();
+            InputStream stream;
             try {
                 url.openConnection();
+                stream = url.openStream();
             } catch (java.io.FileNotFoundException e) {
                 System.err.println("Caught FileNotFoundException when opening URL " + dbURL);
+                continue;
             }
-            InputStream stream = url.openStream();
             Source source = new Source(stream);
             source.fullSequentialParse();
             this.processLinks(key, source);
