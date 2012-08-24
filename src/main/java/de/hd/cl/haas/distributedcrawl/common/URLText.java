@@ -33,5 +33,4 @@ public class URLText extends Text {
         return new URL(this.toString());
     }
     
-    
 }
