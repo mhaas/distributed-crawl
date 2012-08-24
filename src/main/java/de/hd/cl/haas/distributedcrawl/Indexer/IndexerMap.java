@@ -35,6 +35,20 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
      * WebDB timestamp for an URL must be older than this value.
      */
     private static final int MIN_AGE = 300;
+    /**
+     * How many urls the currently crawled URL may contribute to the database.
+     * 
+     * This is motivated by pages like the Wikipedia main site, which features
+     * an extremely large amount of links to Wikipedia content. This leads to
+     * the mapper task responsible for the Wikipedia domain to take an absurdly
+     * long time to finish, thus holding up the entire indexing process.
+     * 
+     * This is merely a stop-gap measure, it would be better to have the indexer
+     * stop after a certain number of crawls, run the rest of the pipeline and
+     * then resume its work. This requires more advanced data structures and
+     * processes, however.
+     */
+    private static final int MAX_NEW_URLS = 50;
     private SequenceFile.Writer writer;
 
     @Override
@@ -66,8 +80,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
      * @throws IOException
      */
     private void processLinks(URLText domain, Source source) throws IOException {
+        int processed = 0;
         List<Element> anchorElements = source.getAllElements("a");
         for (Element anchorElement : anchorElements) {
+            if (processed >= MAX_NEW_URLS) {
+                break;
+            };
             String target = anchorElement.getAttributeValue("href");
             System.err.println("Anchor target is: " + target);
             if (target == null) {
@@ -111,6 +129,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             // TODO: what is the invariant on keys in SequenceFile or SequenceFileInputFormat
 
             this.writeDBURL(u);
+            processed++;
         }
     }
 
