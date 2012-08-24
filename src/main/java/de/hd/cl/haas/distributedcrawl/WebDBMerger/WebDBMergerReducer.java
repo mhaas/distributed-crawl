@@ -22,6 +22,12 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
+
+// TODO: given that it is not easily possible to have one key per mapper
+// from a SequenceFileFormat, we should simply dump multiple files,
+// i.e. one per domain. This makes me somewhat sad as I've written the code
+// to keep everything nicely sorted in one file.. oh well. Doesn't matter.
+// Uh! this is configured by the number of reducers!
 public class WebDBMergerReducer extends Reducer<URLText, WebDBURL, URLText, WebDBURLList> {
 
     @Override
