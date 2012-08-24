@@ -21,6 +21,14 @@ import org.apache.hadoop.util.ReflectionUtils;
 // Example 4-11 from "Hadoop - The definite Guide"
 public class SequenceFileDumper {
 
+    public static String handleRelativeFileURL(String file) {
+        if (!(file.startsWith("hdfs:") || file.startsWith("file:"))) {
+            String curDir = System.getProperty("user.dir");
+            file = "file://" + curDir + "/" + file;
+        }
+        return file;
+    }
+
     public static void main(String[] args) throws IOException {
 
         if (args.length < 1) {
@@ -28,10 +36,7 @@ public class SequenceFileDumper {
             System.exit(1);
         }
         String file = args[0];
-        if (! (file.startsWith("hdfs:") || file.startsWith("file:"))) {
-            String curDir = System.getProperty("user.dir");
-            file = "file://" + curDir + "/" + file;
-        }
+        file = handleRelativeFileURL(file);
         System.err.println("Printing URI: " + file);
         Configuration conf = new Configuration();
         FileSystem fs = FileSystem.get(URI.create(file), conf);
@@ -52,4 +57,3 @@ public class SequenceFileDumper {
         }
     }
 }
-
