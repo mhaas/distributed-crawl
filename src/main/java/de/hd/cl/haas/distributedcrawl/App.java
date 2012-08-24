@@ -112,7 +112,10 @@ public class App {
 
 
             Job indexerJob = new IndexerApp().getJob();
+            
             conf.setInt("mapred.map.tasks", 10);
+           
+            //indexerJob.setNumReduceTasks(30);
             //indexerJob.setMapperClass(MultithreadedMapper.class);
             //conf.set("mapred.map.multithreadedrunner.class", IndexerMap.class.getCanonicalName());
             //conf.set("mapred.map.multithreadedrunner.threads", "8");
@@ -133,6 +136,15 @@ public class App {
             handleStatus(indexMergerJob.getJobName(), success, ii);
 
             Job webDBMergerJob = new WebDBMergerApp().getJob();
+            // specifies the number of reducers, thus the number
+            // of output files, which should result in an increased
+            // number of indexer mappers
+            // so in pipelined job environments, configuring the number
+            // of reducers may have a positive performance impact
+            // for the following map tasks
+            // especially in our case with small input files and a huge
+            // processing cost for value.
+            webDBMergerJob.setNumReduceTasks(40);
             FileInputFormat.addInputPath(webDBMergerJob, webdb);
             FileInputFormat.addInputPath(webDBMergerJob, freshURLs);
             FileOutputFormat.setOutputPath(webDBMergerJob, webdbMerged);
