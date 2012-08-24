@@ -57,7 +57,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
         if (this.writer == null) {
             // TODO: update with correct class?
             FileSystem fs = FileSystem.get(context.getConfiguration());
-            int id = context.getJobID().getId();
+            String id = context.getTaskAttemptID().getTaskID().toString();
             Path outPath = new Path(context.getWorkingDirectory(), App.FRESHURLS_DIR);
             if (!fs.exists(outPath)) {
                 fs.mkdirs(outPath);
