@@ -17,28 +17,30 @@ import org.apache.hadoop.mapreduce.Reducer;
  * It also merges output from previous run, thus updating the index.
  *
  * It also sorts a posting list by frequency while eliminating duplicates.
- * 
- * The benefit of sorting the postings by frequency is not entirely clear to me anymore.
- * The only obvious benefit is the ease of duplicate elimination.
- * 
+ *
+ * The benefit of sorting the postings by frequency is not entirely clear to me
+ * anymore. The only obvious benefit is the ease of duplicate elimination.
+ *
  * The MapReduce book by by Jimmy Lin and Chris Dyer describe that the postings
- * should be sorted by document id, not by frequency. Sorting by document ID
- * has the benefit of allowing quick access to specific IDs by doing a binary search.
- * 
+ * should be sorted by document id, not by frequency. Sorting by document ID has
+ * the benefit of allowing quick access to specific IDs by doing a binary
+ * search.
+ *
  * TODO: re-read chapter 4 in MapReduce book.
- * 
- * As a stop-gap measure, we can implement in-memory sorting of the list by document ID.
- * Assuming the number of number of URLs per domain is tractable (similar assumption in
+ *
+ * As a stop-gap measure, we can implement in-memory sorting of the list by
+ * document ID. Assuming the number of number of URLs per domain is tractable
+ * (similar assumption in
+ *
  * @see{WebDBMergerReducer})
- * 
- * In the end, we need to do two things:
- * - eliminate duplicate URLs (while retaining correct last-fetched date)
- * - sort URLs (document IDs)
- * 
- * We can do both by applying a key-value conversion pattern where we
- * emit (Term,URL) as key and (Count) as value.
- * This allows us to easily retain the correct last-fetched date.
- * 
+ *
+ * In the end, we need to do two things: - eliminate duplicate URLs (while
+ * retaining correct last-fetched date) - sort URLs (document IDs)
+ *
+ * We can do both by applying a key-value conversion pattern where we emit
+ * (Term,URL) as key and (Count) as value. This allows us to easily retain the
+ * correct last-fetched date.
+ *
  * TODO: this is very similar to what we do in @WebDBMergerApp.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
@@ -55,6 +57,7 @@ public class MergerReduce extends Reducer<TermCount, URLText, Term, PostingList>
 
         if (this.currentTerm == null) {
             this.currentTerm = key.getTerm();
+
         }
         if (!this.currentTerm.equals(key.getTerm())) {
             this.yield(context);
@@ -75,7 +78,10 @@ public class MergerReduce extends Reducer<TermCount, URLText, Term, PostingList>
     private void yield(Context context) throws IOException, InterruptedException {
         PostingList pl = new PostingList();
         pl.set(postings.toArray(new Posting[0]));
-        context.write(this.currentTerm, pl);
+        // currentTerm is null sometimes for empty input files
+        if (this.currentTerm != null) {
+            context.write(this.currentTerm, pl);
+        }
         postings.clear();
     }
 }
