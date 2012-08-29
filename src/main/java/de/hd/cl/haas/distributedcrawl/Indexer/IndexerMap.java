@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -37,12 +38,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
     private static final int MIN_AGE = 300;
     /**
      * How many urls the currently crawled URL may contribute to the database.
-     * 
+     *
      * This is motivated by pages like the Wikipedia main site, which features
      * an extremely large amount of links to Wikipedia content. This leads to
      * the mapper task responsible for the Wikipedia domain to take an absurdly
      * long time to finish, thus holding up the entire indexing process.
-     * 
+     *
      * This is merely a stop-gap measure, it would be better to have the indexer
      * stop after a certain number of crawls, run the rest of the pipeline and
      * then resume its work. This requires more advanced data structures and
@@ -79,7 +80,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
      * @param source
      * @throws IOException
      */
-    private void processLinks(URLText domain, Source source) throws IOException {
+    private int processLinks(URLText domain, Source source) throws IOException {
         int processed = 0;
         List<Element> anchorElements = source.getAllElements("a");
         for (Element anchorElement : anchorElements) {
@@ -131,6 +132,7 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             this.writeDBURL(u);
             processed++;
         }
+        return processed;
     }
 
     private void writeDBURL(WebDBURL url) throws MalformedURLException, IOException {
@@ -166,7 +168,6 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
     @Override
     protected void map(URLText key, WebDBURLList value, Context context) throws IOException, InterruptedException {
 
-        System.out.println("key is " + key.toString());
 
         // Write current URL to WebDB with crawl date.
         // TODO: this deprecates the need to merge two
@@ -181,12 +182,14 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
 
         WebDBURL[] urls = value.toArray();
         for (int ii = 0; ii < urls.length; ii++) {
+            context.getCounter(IndexerCounter.ALL_REQUESTED_URL).increment(1);
             Thread.sleep(CRAWL_DELAY * 1000);
             WebDBURL dbURL = urls[ii];
             Date d = dbURL.getDate();
             Date now = new Date();
             if ((now.getTime() - d.getTime()) < MIN_AGE * 1000) {
                 System.err.println("URL " + dbURL.getText() + " is not old enough, not crawling");
+                context.getCounter(IndexerCounter.SKIPPED_TOO_FRESH).increment(1);
                 continue;
             }
 
@@ -194,9 +197,16 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
             URL url = dbURL.getURL();
             InputStream stream;
             try {
-                url.openConnection();
+                URLConnection conn = url.openConnection();
+
 
                 stream = url.openStream();
+                String type = conn.getContentType();
+                // only process html and xml mime types
+                if (!FetchUtil.isIndexable(type)) {
+                    context.getCounter(IndexerCounter.SKIPPED_NOT_HTML).increment(1);
+                    continue;
+                }
 
             } catch (java.io.IOException e) {
                 System.err.println("Caught IOException when opening URL " + dbURL);
@@ -209,11 +219,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
 
             Source source = new Source(stream);
             source.fullSequentialParse();
-            this.processLinks(key, source);
+            int processed = this.processLinks(key, source);
+            context.getCounter(IndexerCounter.FRESH_URL).increment(processed);
 
             String completeContent = source.getTextExtractor().toString();
-            System.out.println("CompleteContent: ");
-            System.out.println(completeContent);
+            //System.out.println("CompleteContent: ");
+            //System.out.println(completeContent);
             // poor man's tokenizer
             String[] tokens = completeContent.split(" ");
             Map<String, Integer> counts = this.countTokens(tokens);
@@ -227,6 +238,12 @@ public class IndexerMap extends Mapper<URLText, WebDBURLList, Term, Posting> {
                 tTerm.set(term);
                 context.write(tTerm, p);
             }
+            context.getCounter(IndexerCounter.PROCESSED_URL).increment(1);
         }
     }
+
+    public enum IndexerCounter {
+
+        SKIPPED_NOT_HTML, SKIPPED_TOO_FRESH, FRESH_URL, PROCESSED_URL, ALL_REQUESTED_URL
+    };
 }
