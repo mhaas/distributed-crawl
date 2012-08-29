@@ -14,7 +14,17 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
- * Hello world!
+ * Main entry point into the DistributedCrawl project.
+ *
+ * This class configures the processing pipeline and runs it in multiple
+ * iterations to gradually discover and index the web.
+ *
+ * After each iteration, output directories become input directories. This
+ * directory flipping is necessary because HDFS does not support directory
+ * renames.
+ *
+ * The resulting index file can be queried using the
+ * de.hd.cl.haas.distributedcrawl.search class.
  *
  */
 public class App {
