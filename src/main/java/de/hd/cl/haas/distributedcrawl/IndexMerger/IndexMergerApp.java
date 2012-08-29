@@ -24,6 +24,10 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
  * The benefit of sorting the postings by frequency is not entirely clear to me
  * anymore. The only obvious benefit is the ease of duplicate elimination.
  *
+ * What is also still missing is the ability to eliminate duplicate URLs
+ * for a term - this is crucial. This is also easily done by letting the framework
+ * do the sorting for us and then eliminate duplicates in the Reducer.
+ * 
  * The MapReduce book by by Jimmy Lin and Chris Dyer describe that the postings
  * should be sorted by document id, not by frequency. Sorting by document ID has
  * the benefit of allowing quick access to specific IDs by doing a binary
