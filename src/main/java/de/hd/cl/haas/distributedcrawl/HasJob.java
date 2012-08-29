@@ -9,7 +9,9 @@ import org.apache.hadoop.mapreduce.Job;
 
 /**
  *
- * @author haas
+ * Interface indicating whether a class has an associated MapReduce job.
+ * 
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public interface HasJob {
     
