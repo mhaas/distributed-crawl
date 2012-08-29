@@ -17,7 +17,14 @@ import org.apache.hadoop.io.SequenceFile;
 
 /**
  *
- * @author haas
+ * Runs queries against the index.
+ *
+ * Start this in a shell. The first argument is the SequenceFile containing the
+ * index. The second argument is either "OR" or "AND", indicating the mode in
+ * which result sets for each term are merged. Following arguments are search
+ * terms.
+ *
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public class Searcher {
 
@@ -34,14 +41,14 @@ public class Searcher {
     }
 
     private Set<WebDBURL> getDocumentsForTerm(String term) throws IOException {
-        // TODO: use MapSequenceFile
-        // Unfortunately, MapFileOutputFormat is not available in 0.20.2
-        // http://hadoop.apache.org/mapreduce/docs/r0.21.0/api/org/apache/hadoop/mapreduce/lib/output/MapFileOutputFormat.html
+
         Term curTerm = new Term();
         WebDBURLList l = new WebDBURLList();
         boolean found = false;
         // This is slow, but Hadoop 0.20.2 does not support (a non-deprecated, usable)
         // MapFileOutputFormat
+        // Unfortunately, MapFileOutputFormat is not available in 0.20.2
+        // http://hadoop.apache.org/mapreduce/docs/r0.21.0/api/org/apache/hadoop/mapreduce/lib/output/MapFileOutputFormat.html
         while (this.reader.next(curTerm)) {
             if (curTerm.toString().equals(term)) {
                 this.reader.getCurrentValue(l);
@@ -64,10 +71,16 @@ public class Searcher {
     }
 
     /**
-     * Given result sets for multiple terms, gets intersection of result sets.
+     * Merges result sets for multiple terms.
      *
-     * @param results
-     * @return
+     * If the inclusive parameter is true, the union of result sets is returned,
+     * corresponding to the "OR" search mode. If the inclusive parameter is
+     * false, the intersection of result sets is returned, corresponding to the
+     * "AND" search mode.
+     *
+     * @param results List of result sets
+     * @param inclusive If true, return union of result sets
+     * @return union or intersection of result sets
      */
     private Set<WebDBURL> score(List<Set<WebDBURL>> results, boolean inclusive) {
 
