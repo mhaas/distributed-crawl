@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.util;
 
 import de.hd.cl.haas.distributedcrawl.common.URLText;
@@ -17,7 +13,12 @@ import org.apache.hadoop.io.SequenceFile;
 
 /**
  *
- * Converts a text file to a @SequenceFile
+ * Converts a seed text file to a SequenceFile.
+ *
+ * This is used to construct an initial WebDB from user-supplied seed URLs.
+ *
+ * The seed.txt file contains list of host names and associated URLs, one host
+ * name per line. Entries on a given line are delimited by the TAB character.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
@@ -26,6 +27,7 @@ public class TextToSequenceFile {
     private static void printFileNotExist() {
         System.err.println("File does not exist");
     }
+
     private static void printUsage() {
         System.err.println("Please provide seed text file as first argument.");
     }
@@ -34,7 +36,7 @@ public class TextToSequenceFile {
 
         if (args.length < 1) {
             TextToSequenceFile.printUsage();
-             System.exit(1);
+            System.exit(1);
         }
 
         String in = args[0];
@@ -48,14 +50,14 @@ public class TextToSequenceFile {
         Configuration conf = new Configuration();
         String curDir = System.getProperty("user.dir");
         String out = "file://" + curDir + "/webdb.dat";
-        
+
         FileSystem fs = FileSystem.get(URI.create(out), conf);
         Path path = new Path(out);
 
         SequenceFile.Writer w = SequenceFile.createWriter(fs, conf, path, URLText.class, WebDBURLList.class);
         BufferedReader r = new BufferedReader(new FileReader(inFile));
         String line;
-        
+
         while ((line = r.readLine()) != null) {
             ArrayList<WebDBURL> urlList = new ArrayList<WebDBURL>();
             String[] tokens = line.split("\t");

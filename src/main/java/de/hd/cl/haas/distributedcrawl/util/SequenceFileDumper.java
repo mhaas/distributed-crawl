@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.util;
 
 import java.io.IOException;
@@ -16,9 +12,14 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 /**
  *
- * @author haas
+ * Helper to dump SequenceFiles to stdout.
+ *
+ * Start from Shell and supply name of SequenceFile as first argument.
+ *
+ * Example 4-11 from the Book "Hadoop - The definitive Guide".
+ *
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-// Example 4-11 from "Hadoop - The definite Guide"
 public class SequenceFileDumper {
 
     public static String handleRelativeFileURL(String file) {
