@@ -82,7 +82,7 @@ public class Searcher {
      * @param inclusive If true, return union of result sets
      * @return union or intersection of result sets
      */
-    private Set<WebDBURL> score(List<Set<WebDBURL>> results, boolean inclusive) {
+    private Set<WebDBURL> merge(List<Set<WebDBURL>> results, boolean inclusive) {
 
         HashSet<WebDBURL> res = new HashSet<WebDBURL>();
         if (results.size() > 0) {
@@ -138,7 +138,7 @@ public class Searcher {
             l.add(docs);
         }
 
-        Set<WebDBURL> rs = s.score(l, inclusive);
+        Set<WebDBURL> rs = s.merge(l, inclusive);
         System.err.println("Merging result sets: " + inclusive);
         System.err.println("Got " + rs.size() + " results");
         for (WebDBURL result : rs) {
