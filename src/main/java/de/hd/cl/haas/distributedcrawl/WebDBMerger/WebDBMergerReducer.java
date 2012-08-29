@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.WebDBMerger;
 
 import de.hd.cl.haas.distributedcrawl.common.URLText;
@@ -10,24 +6,18 @@ import de.hd.cl.haas.distributedcrawl.common.WebDBURLList;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**
- *
- * This package merges the existing WebDB with the URLs freshly discovered
- * during the crawl process in @IndexerApp.
- *
- *
+ * 
+ * This class is the Reducer part of the WebDBMerger job.
+ * 
+ * Its input are host names and lists of WebDB entries. The reducer
+ * removes duplicates from the URL lists for a given host name while
+ * preserving the freshest last-fetched time stamp.
+ * 
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-
-// TODO: given that it is not easily possible to have one key per mapper
-// from a SequenceFileFormat, we should simply dump multiple files,
-// i.e. one per domain. This makes me somewhat sad as I've written the code
-// to keep everything nicely sorted in one file.. oh well. Doesn't matter.
-// Uh! this is configured by the number of reducers!
 public class WebDBMergerReducer extends Reducer<URLText, WebDBURL, URLText, WebDBURLList> {
 
     @Override
@@ -38,22 +28,6 @@ public class WebDBMergerReducer extends Reducer<URLText, WebDBURL, URLText, WebD
 
         // For now, we assume that the list of URLs for a domain is tractable
         // and treat duplicates in memory
-
-        /*
-         * Apparently, Writable objects get re-used, so save copies.
-         * HashMap<URLText, WebDBURL> memory = new HashMap<URLText, WebDBURL>();
-         *
-         *
-         * for (WebDBURL u : values) {
-         *
-         * if (memory.containsKey(u.getURLText())) { long currentDate =
-         * memory.get(u.getURLText()).getValue().get(); long newDate =
-         * u.getValue().get(); // if we have a newer last-fetch date, update it
-         * if (newDate > currentDate) { memory.put(u.getURLText(), u); } } else
-         * { // first time we see this URL, so in it goes
-         * memory.put(u.getURLText(), u); } }
-         */
-
 
         HashMap<String, Long> memory = new HashMap<String, Long>();
         for (WebDBURL u : values) {
@@ -73,7 +47,7 @@ public class WebDBMergerReducer extends Reducer<URLText, WebDBURL, URLText, WebD
 
         // re-construct urllist
         HashSet<WebDBURL> temp = new HashSet<WebDBURL>();
-        for (String s: memory.keySet()) {
+        for (String s : memory.keySet()) {
             temp.add(new WebDBURL(new URLText(s), memory.get(s)));
         }
         WebDBURLList result = new WebDBURLList();

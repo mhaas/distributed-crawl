@@ -1,26 +1,25 @@
 package de.hd.cl.haas.distributedcrawl.WebDBMerger;
 
-import de.hd.cl.haas.distributedcrawl.*;
-import de.hd.cl.haas.distributedcrawl.Indexer.IndexerMap;
-import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
+import de.hd.cl.haas.distributedcrawl.HasJob;
 import de.hd.cl.haas.distributedcrawl.common.URLText;
 import de.hd.cl.haas.distributedcrawl.common.WebDBURL;
 import de.hd.cl.haas.distributedcrawl.common.WebDBURLList;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
- * Hello world!
  *
+ * This package merges the existing WebDB with the URLs freshly discovered
+ * during the crawl process in @IndexerApp.
+ *
+ *
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public class WebDBMergerApp implements HasJob {
 
@@ -50,9 +49,6 @@ public class WebDBMergerApp implements HasJob {
         job.setMapperClass(WebDBMergerMapper.class);
         job.setReducerClass(WebDBMergerReducer.class);
 
-
-
-        // TextInputFormat: key is offset in file, value is line
         job.setInputFormatClass(SequenceFileInputFormat.class);
         job.setOutputFormatClass(SequenceFileOutputFormat.class);
         return job;
