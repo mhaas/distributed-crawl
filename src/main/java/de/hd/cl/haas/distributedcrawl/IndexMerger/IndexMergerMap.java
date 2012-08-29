@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.Mapper;
  * Its input are terms as keys and posting lists as values. As output keys, it
  * emits TermCount instances, which is a tuple holding terms and posting
  * frequencies (key-value conversion pattern). The output value for each
- * TermCount will be the accompaniying URL.
+ * TermCount will be the accompanying URL.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
