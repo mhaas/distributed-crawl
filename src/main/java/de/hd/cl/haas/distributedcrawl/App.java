@@ -2,8 +2,6 @@ package de.hd.cl.haas.distributedcrawl;
 
 import de.hd.cl.haas.distributedcrawl.IndexMerger.IndexMergerApp;
 import de.hd.cl.haas.distributedcrawl.Indexer.IndexerApp;
-import de.hd.cl.haas.distributedcrawl.Indexer.IndexerMap;
-import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
 import de.hd.cl.haas.distributedcrawl.WebDBMerger.WebDBMergerApp;
 import java.io.IOException;
 import java.net.URI;
@@ -11,14 +9,9 @@ import java.util.Date;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  * Hello world!
