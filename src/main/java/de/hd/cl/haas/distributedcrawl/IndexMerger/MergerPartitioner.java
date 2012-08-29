@@ -12,9 +12,9 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
 
 /**
  *
- * This is a special partitioner for TermCount.
+ * This is a special Partitioner for TermCount.
  * 
- * For a @TermCount, it is important that all 
+ * For a TermCount, it is important that all 
  * terms are sent to the same reducer, ordered by 
  * the frequency.
  * 

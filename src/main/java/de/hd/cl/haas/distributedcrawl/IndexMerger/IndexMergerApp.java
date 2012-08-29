@@ -15,9 +15,28 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 /**
- * Hello world!
+ * This package merges the output of multiple Indexer instances.
  *
+ * It also merges output from previous run, thus updating the index.
+ *
+ * It also sorts a posting list by frequency while eliminating duplicates.
+ *
+ * The benefit of sorting the postings by frequency is not entirely clear to me
+ * anymore. The only obvious benefit is the ease of duplicate elimination.
+ *
+ * The MapReduce book by by Jimmy Lin and Chris Dyer describe that the postings
+ * should be sorted by document id, not by frequency. Sorting by document ID has
+ * the benefit of allowing quick access to specific IDs by doing a binary
+ * search.
+ *
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
+
+// In the end, we need to do two things: - eliminate duplicate URLs (while
+// retaining correct last-fetched date) - sort URLs (document IDs)
+// We can do both by applying a key-value conversion pattern where we emit
+// (Term,URL) as key and (Count) as value. This allows us to easily retain the
+// correct last-fetched date.
 public class IndexMergerApp implements HasJob {
 
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {

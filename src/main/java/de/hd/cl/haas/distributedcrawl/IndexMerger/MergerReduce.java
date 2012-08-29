@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.IndexMerger;
 
 import de.hd.cl.haas.distributedcrawl.common.*;
@@ -11,42 +7,17 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  *
- * This class (package) merges the output of multiple Indexer (reducer)
- * instances.
+ * This is the Reducer for the IndexMerger.
  *
- * It also merges output from previous run, thus updating the index.
+ * Its input keys are TermCount, input values are URLText. Terms are collected
+ * and sorted by count.
  *
- * It also sorts a posting list by frequency while eliminating duplicates.
  *
- * The benefit of sorting the postings by frequency is not entirely clear to me
- * anymore. The only obvious benefit is the ease of duplicate elimination.
- *
- * The MapReduce book by by Jimmy Lin and Chris Dyer describe that the postings
- * should be sorted by document id, not by frequency. Sorting by document ID has
- * the benefit of allowing quick access to specific IDs by doing a binary
- * search.
- *
- * TODO: re-read chapter 4 in MapReduce book.
- *
- * As a stop-gap measure, we can implement in-memory sorting of the list by
- * document ID. Assuming the number of number of URLs per domain is tractable
- * (similar assumption in
- *
- * @see{WebDBMergerReducer})
- *
- * In the end, we need to do two things: - eliminate duplicate URLs (while
- * retaining correct last-fetched date) - sort URLs (document IDs)
- *
- * We can do both by applying a key-value conversion pattern where we emit
- * (Term,URL) as key and (Count) as value. This allows us to easily retain the
- * correct last-fetched date.
- *
- * TODO: this is very similar to what we do in @WebDBMergerApp.
+ * Its output are again Terms and PostingsLists, which together form the new
+ * index.
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-// Input should arrive sorted by key. We collect these and emit a sorted PostingList
-// We should also eleminate duplicate URLTexts - TODO: how? Sort PostingLists by URL?
 public class MergerReduce extends Reducer<TermCount, URLText, Term, PostingList> {
 
     Term currentTerm;
