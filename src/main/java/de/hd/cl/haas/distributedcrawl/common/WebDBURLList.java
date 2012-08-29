@@ -9,23 +9,26 @@ import java.util.List;
 import org.apache.hadoop.io.ArrayWritable;
 
 /**
+ * This class holds a list of WebDB entries.
  *
- * @author haas
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
+ * 
  */
 public class WebDBURLList extends ArrayWritable {
-    
-     public WebDBURLList() {
+
+    public WebDBURLList() {
         super(WebDBURL.class);
     }
+
     @Override
     public WebDBURL[] toArray() {
         return (WebDBURL[]) super.toArray();
     }
-    
+
     public void fromCollection(Collection<WebDBURL> urls) {
         super.set(urls.toArray(new WebDBURL[urls.size()]));
     }
-    
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -33,6 +36,6 @@ public class WebDBURLList extends ArrayWritable {
         for (int ii = 0; ii < urls.length; ii++) {
             buf.append(urls[ii]);
         }
-         return buf.toString();
+        return buf.toString();
     }
 }

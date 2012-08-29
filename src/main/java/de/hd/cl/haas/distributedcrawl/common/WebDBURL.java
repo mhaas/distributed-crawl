@@ -11,8 +11,9 @@ import org.apache.hadoop.io.LongWritable;
 
 
 /**
- *
- * Holds URL and last-fetch date.
+ * This class represents an entry in the WebDB.
+ * 
+ * It holds URL and last-fetch date.
  * 
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
