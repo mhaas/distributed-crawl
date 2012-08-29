@@ -1,28 +1,31 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.ArrayWritable;
 
 /**
  *
- * @author haas
+ * A PostingList is a list of Posting instances.
+ *
+ * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public class PostingList extends ArrayWritable {
 
     public PostingList() {
         super(Posting.class);
     }
+
     @Override
     public Posting[] toArray() {
         return (Posting[]) super.toArray();
     }
-    
+
     /**
+     *
+     * Returns a string representation of the whole list.
+     *
      * This is probably somewhat slow, so use with care.
-     * @return 
+     *
+     * @return String representing complete list
      */
     @Override
     public String toString() {
@@ -32,6 +35,6 @@ public class PostingList extends ArrayWritable {
             buf.append(list[ii].toString());
             buf.append("\n");
         }
-        return buf.toString();    
+        return buf.toString();
     }
 }
