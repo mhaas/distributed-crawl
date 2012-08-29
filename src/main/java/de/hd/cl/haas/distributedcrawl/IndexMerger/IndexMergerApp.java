@@ -62,8 +62,8 @@ public class IndexMergerApp implements HasJob {
         job.setOutputValueClass(PostingList.class);
 
         job.setJarByClass(IndexMergerApp.class);
-        job.setMapperClass(MergerMap.class);
-        job.setPartitionerClass(MergerPartitioner.class);
+        job.setMapperClass(IndexMergerMap.class);
+        job.setPartitionerClass(IndexMergerPartitioner.class);
         job.setReducerClass(MergerReduce.class);
 
 

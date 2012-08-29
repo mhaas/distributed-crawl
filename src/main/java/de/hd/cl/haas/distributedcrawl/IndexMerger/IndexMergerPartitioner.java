@@ -22,7 +22,7 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
  * 
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class MergerPartitioner extends Partitioner<TermCount, URLText> {
+public class IndexMergerPartitioner extends Partitioner<TermCount, URLText> {
 
     private HashPartitioner<Term, URLText> hp = new HashPartitioner<Term, URLText>();
  

@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.Mapper;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class MergerMap extends Mapper<Term, PostingList, TermCount, URLText> {
+public class IndexMergerMap extends Mapper<Term, PostingList, TermCount, URLText> {
 
     @Override
     protected void map(Term key, PostingList value, Context context) throws IOException, InterruptedException {

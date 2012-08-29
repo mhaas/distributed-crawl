@@ -46,8 +46,8 @@ public class WebDBMergerApp implements HasJob {
         job.setOutputValueClass(WebDBURLList.class);
 
         job.setJarByClass(WebDBMergerApp.class);
-        job.setMapperClass(WebDBMergerMapper.class);
-        job.setReducerClass(WebDBMergerReducer.class);
+        job.setMapperClass(WebDBMergerMap.class);
+        job.setReducerClass(WebDBMergerReduce.class);
 
         job.setInputFormatClass(SequenceFileInputFormat.class);
         job.setOutputFormatClass(SequenceFileOutputFormat.class);

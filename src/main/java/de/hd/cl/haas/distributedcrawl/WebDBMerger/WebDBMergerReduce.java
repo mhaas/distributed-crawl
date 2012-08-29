@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  * 
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class WebDBMergerReducer extends Reducer<URLText, WebDBURL, URLText, WebDBURLList> {
+public class WebDBMergerReduce extends Reducer<URLText, WebDBURL, URLText, WebDBURLList> {
 
     @Override
     protected void reduce(URLText key, Iterable<WebDBURL> values, Context context) throws IOException, InterruptedException {

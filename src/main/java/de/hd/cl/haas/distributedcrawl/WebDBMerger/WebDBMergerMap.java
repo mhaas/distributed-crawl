@@ -16,7 +16,7 @@ import org.apache.hadoop.mapreduce.Mapper;
   * 
   * @author Michael Haas <haas@cl.uni-heidelberg.de>
   */
-public class WebDBMergerMapper extends Mapper<URLText, WebDBURLList, URLText, WebDBURL> {
+public class WebDBMergerMap extends Mapper<URLText, WebDBURLList, URLText, WebDBURL> {
 
     @Override
     protected void map(URLText key, WebDBURLList value, Context context) throws IOException, InterruptedException {
