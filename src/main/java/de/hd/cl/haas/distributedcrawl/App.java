@@ -7,6 +7,7 @@ import de.hd.cl.haas.distributedcrawl.Indexer.IndexerReduce;
 import de.hd.cl.haas.distributedcrawl.WebDBMerger.WebDBMergerApp;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -32,7 +33,6 @@ public class App {
     public static final String INDEX_SORTED_DIR = "index-sorted";
     // index from previous run
     public static final String INDEX_OLD_DIR = "index-old";
-    public static final int ITERATIONS = 3;
 
     private static void handleStatus(String job, boolean success, int iteration) {
         if (!success) {
@@ -47,7 +47,13 @@ public class App {
         handleStatus(job, success, -1);
     }
 
+    private static void printUsage() {
+        System.err.println("Error! Provide number of iterations as first argument!");
+        System.exit(1);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+
         Configuration conf = new Configuration();
         FileSystem fs = FileSystem.get(URI.create(WEBDB_DIR), conf);
 
@@ -60,9 +66,21 @@ public class App {
         Path sortedIndex;
         Path oldIndex;
 
-        for (int ii = 0; ii < ITERATIONS; ii++) {
+        if (args.length < 1) {
+            printUsage();
+        }
 
-
+        Date start = new Date();
+        int iterations = -1;
+        try {
+            iterations = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            printUsage();
+        }
+        System.err.println("User requested " + iterations + " iterations");
+        for (int ii = 0; ii < iterations; ii++) {
+            System.err.println("Now running iteration " + ii);
+            Date iterStart = new Date();
 
             // Indexer:
             //  - reads from WEBDB_DIR
@@ -87,7 +105,6 @@ public class App {
 
             } else {
                 System.err.println("Flipping directories in iteration " + ii);
-
                 webdb = new Path(WEBDB_MERGED_DIR);
                 webdbMerged = new Path(WEBDB_DIR);
                 sortedIndex = new Path(INDEX_OLD_DIR);
@@ -112,10 +129,17 @@ public class App {
 
 
             Job indexerJob = new IndexerApp().getJob();
-            
+
             conf.setInt("mapred.map.tasks", 10);
-           
-            //indexerJob.setNumReduceTasks(30);
+            // TODO: for multiple mappers, it's probably inefficient to copy everything
+            // to a single reducer (?), so having multiple reducers might speed things up
+            // this doesn't break our data model as the next stop, the 
+            // indexMerger, can work just fine with multiple input files
+            // in fact, that might speed up the indexMerger a bit
+            // indexerJob.setNumReduceTasks(30);
+
+
+
             //indexerJob.setMapperClass(MultithreadedMapper.class);
             //conf.set("mapred.map.multithreadedrunner.class", IndexerMap.class.getCanonicalName());
             //conf.set("mapred.map.multithreadedrunner.threads", "8");
@@ -150,10 +174,11 @@ public class App {
             FileOutputFormat.setOutputPath(webDBMergerJob, webdbMerged);
             success = webDBMergerJob.waitForCompletion(true);
             handleStatus(webDBMergerJob.getJobName(), success, ii);
+            Date iterStop = new Date();
+            System.err.println("Iteration took " + (iterStop.getTime() - iterStart.getTime()) / 1024);
         }
 
-
-
-
+        Date end = new Date();
+        System.err.println("Crawling " + iterations + " took " + ((end.getTime() - start.getTime()) / 1000) + "s");
     }
 }
