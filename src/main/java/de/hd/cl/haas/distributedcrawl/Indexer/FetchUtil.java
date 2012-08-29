@@ -18,8 +18,11 @@ public class FetchUtil {
      * @return true or false
      */
     public static boolean isIndexable(String contentType) {
+
         System.err.println("isIndexable: contentType is " + contentType);
-        
+        if (contentType == null) {
+            return false;
+        }
         String c = contentType.toLowerCase();
         // http://www.w3.org/TR/xhtml-media-types/#media-types
         if (c.startsWith("text/html")) {
