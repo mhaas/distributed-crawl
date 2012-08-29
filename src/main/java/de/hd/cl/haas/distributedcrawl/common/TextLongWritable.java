@@ -9,7 +9,7 @@ import org.apache.hadoop.io.Writable;
 
 /**
  *
- * Abstract tuple class holding an Text and a Long.
+ * Abstract tuple class holding a Text and a Long.
  *
  * This is sub-classed to implement different key and value classes which need
  * to hold two values.

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.hd.cl.haas.distributedcrawl.common;
 
 import org.apache.hadoop.io.LongWritable;
@@ -10,7 +6,7 @@ import org.apache.hadoop.io.WritableComparable;
 /**
  * This class holds a tuple of Term and frequency.
  *
- * It is used in @IndexerMap.java to implement the key-value inversion pattern.
+ * It is used in IndexerMap.java to implement the key-value inversion pattern.
  *
  * It implements Comparable. When compared, first the Term is compared. If both
  * terms are not equal, the frequency is compared.
@@ -21,13 +17,10 @@ import org.apache.hadoop.io.WritableComparable;
  * This is used in conjunction with @MergerPartitioner to ensure that keys with
  * the same term arrive at the same reducer.
  *
- * If multiple reducers are used, the result files are probably easily
- * concatenated (?!).
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
 public class TermCount extends TextLongWritable implements Comparable<TermCount>, WritableComparable<TermCount> {
-    // TODO: what constraints wrt implementation of Comparable are there? hashcode? equals?
 
     public TermCount() {};
     
@@ -39,6 +32,7 @@ public class TermCount extends TextLongWritable implements Comparable<TermCount>
         return new Term(this.getText());
     }
 
+    // first compares by term, then by frequency
     @Override
     public int compareTo(TermCount o) {
         int c1 = this.getTerm().compareTo(o.getTerm());
