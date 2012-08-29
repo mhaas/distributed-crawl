@@ -5,3 +5,8 @@
 *.war
 *.ear
 /target/
+/index-sorted/
+/index-raw/
+/fresh-urls/
+/webdb/
+/webdb-merged/
