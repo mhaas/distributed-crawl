@@ -1,0 +1,3 @@
+www.cl.uni-heidelberg.de	http://www.cl.uni-heidelberg.de
+de.wikipedia.org	http://de.wikipedia.org/wiki/Wikipedia:Hauptseite
+uni-heidelberg.de	http://www.uni-heidelberg.de
