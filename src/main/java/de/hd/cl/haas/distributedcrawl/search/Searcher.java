@@ -73,13 +73,11 @@ public class Searcher {
 
         HashSet<WebDBURL> res = new HashSet<WebDBURL>();
         if (results.size() > 0) {
-            System.err.println("Adding first result");
             res.addAll(results.get(0));
             results.remove(0);
         }
 
         for (Set<WebDBURL> posting : results) {
-            System.err.println("Adding second to n result..");
             // retainAll is intersection
             if (inclusive) {
                 res.addAll(posting);
