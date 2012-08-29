@@ -46,10 +46,6 @@ public class App {
         }
     }
 
-    private static void handleStatus(String job, boolean success) {
-        handleStatus(job, success, -1);
-    }
-
     private static void printUsage() {
         System.err.println("Error! Provide number of iterations as first argument!");
         System.exit(1);
