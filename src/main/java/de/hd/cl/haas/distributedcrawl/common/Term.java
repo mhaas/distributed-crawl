@@ -26,4 +26,22 @@ public class Term extends Text{
     public Term() {
     }
     
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+    // TODO: implement hashcode?
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Term other = (Term) obj;
+        return other.toString().equals(this.toString());
+    }
+    
 }
