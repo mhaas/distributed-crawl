@@ -31,10 +31,12 @@ public class PostingList extends ArrayWritable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         Posting[] list = this.toArray();
+        buf.append("[");
         for (int ii = 0; ii < list.length; ii++) {
             buf.append(list[ii].toString());
-            buf.append("\n");
+            buf.append("||");
         }
+        buf.append("]");
         return buf.toString();
     }
 }
