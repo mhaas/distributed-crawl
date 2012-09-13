@@ -18,25 +18,28 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class MergerReduce extends Reducer<TermCount, URLText, Term, PostingList> {
+public class MergerReduce extends Reducer<Term, Posting, Term, PostingList> {
 
-    Term currentTerm;
-    ArrayList<Posting> postings = new ArrayList<Posting>();
+    private Term currentTerm;
+    private ArrayList<Posting> postings = new ArrayList<Posting>();
 
     @Override
-    protected void reduce(TermCount key, Iterable<URLText> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Term key, Iterable<Posting> values, Context context) throws IOException, InterruptedException {
 
         if (this.currentTerm == null) {
-            this.currentTerm = key.getTerm();
+            this.currentTerm = new Term();
+            this.currentTerm.set(key.toString());
 
         }
-        if (!this.currentTerm.equals(key.getTerm())) {
+        if (!this.currentTerm.equals(key)) {
             this.yield(context);
-            this.currentTerm = key.getTerm();
+            this.currentTerm = new Term();
+            this.currentTerm.set(key.toString());
+            
         }
-        for (URLText u : values) {
-            Posting p = new Posting(u, key.getValue());
-            postings.add(p);
+        for (Posting p : values) {
+            Posting temp = new Posting(p.getURL().toString(), p.getValue().get());
+            this.postings.add(temp);
         }
     }
 
@@ -48,11 +51,11 @@ public class MergerReduce extends Reducer<TermCount, URLText, Term, PostingList>
 
     private void yield(Context context) throws IOException, InterruptedException {
         PostingList pl = new PostingList();
-        pl.set(postings.toArray(new Posting[0]));
+        pl.set(this.postings.toArray(new Posting[0]));
         // currentTerm is null sometimes for empty input files
         if (this.currentTerm != null) {
             context.write(this.currentTerm, pl);
         }
-        postings.clear();
+        this.postings.clear();
     }
 }

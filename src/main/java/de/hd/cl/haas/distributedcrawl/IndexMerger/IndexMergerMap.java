@@ -18,15 +18,17 @@ import org.apache.hadoop.mapreduce.Mapper;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class IndexMergerMap extends Mapper<Term, PostingList, TermCount, URLText> {
+public class IndexMergerMap extends Mapper<Term, PostingList, Term, Posting> {
 
     @Override
     protected void map(Term key, PostingList value, Context context) throws IOException, InterruptedException {
+        Term temp = new Term();
+        temp.set(key.toString());
         Posting[] postings = value.toArray();
         for (int ii = 0; ii < postings.length; ii++) {
             Posting p = postings[ii];
-            TermCount tc = new TermCount(key, p.getValue());
-            context.write(tc, p.getURL());
+            //TermCount tc = new TermCount(key, p.getValue());
+            context.write(temp, p);
         }
     }
 }

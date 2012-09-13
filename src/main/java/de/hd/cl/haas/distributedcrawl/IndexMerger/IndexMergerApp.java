@@ -1,10 +1,7 @@
 package de.hd.cl.haas.distributedcrawl.IndexMerger;
 
 import de.hd.cl.haas.distributedcrawl.HasJob;
-import de.hd.cl.haas.distributedcrawl.common.PostingList;
-import de.hd.cl.haas.distributedcrawl.common.Term;
-import de.hd.cl.haas.distributedcrawl.common.TermCount;
-import de.hd.cl.haas.distributedcrawl.common.URLText;
+import de.hd.cl.haas.distributedcrawl.common.*;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -59,15 +56,15 @@ public class IndexMergerApp implements HasJob {
 
         Job job = new Job(conf, "IndexMerger");
 
-        job.setMapOutputKeyClass(TermCount.class);
-        job.setMapOutputValueClass(URLText.class);
+        job.setMapOutputKeyClass(Term.class);
+        job.setMapOutputValueClass(Posting.class);
 
         job.setOutputKeyClass(Term.class);
         job.setOutputValueClass(PostingList.class);
 
         job.setJarByClass(IndexMergerApp.class);
         job.setMapperClass(IndexMergerMap.class);
-        job.setPartitionerClass(IndexMergerPartitioner.class);
+        //job.setPartitionerClass(IndexMergerPartitioner.class);
         job.setReducerClass(MergerReduce.class);
 
 
