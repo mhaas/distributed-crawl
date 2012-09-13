@@ -22,6 +22,8 @@ public class IndexMergerMap extends Mapper<Term, PostingList, Term, Posting> {
 
     @Override
     protected void map(Term key, PostingList value, Context context) throws IOException, InterruptedException {
+        // create temporary object as re-using the key object will result in only
+        // one key being written?!
         Term temp = new Term();
         temp.set(key.toString());
         Posting[] postings = value.toArray();

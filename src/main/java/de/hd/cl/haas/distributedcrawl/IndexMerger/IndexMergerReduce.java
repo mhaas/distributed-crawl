@@ -18,14 +18,15 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author Michael Haas <haas@cl.uni-heidelberg.de>
  */
-public class MergerReduce extends Reducer<Term, Posting, Term, PostingList> {
+public class IndexMergerReduce extends Reducer<Term, Posting, Term, PostingList> {
 
     private Term currentTerm;
     private ArrayList<Posting> postings = new ArrayList<Posting>();
 
     @Override
     protected void reduce(Term key, Iterable<Posting> values, Context context) throws IOException, InterruptedException {
-
+        // re-create Posting and Term objects as re-using these Writable objects
+        // had weird side effects in IndexMergerMap
         if (this.currentTerm == null) {
             this.currentTerm = new Term();
             this.currentTerm.set(key.toString());
@@ -38,6 +39,7 @@ public class MergerReduce extends Reducer<Term, Posting, Term, PostingList> {
             
         }
         for (Posting p : values) {
+            
             Posting temp = new Posting(p.getURL().toString(), p.getValue().get());
             this.postings.add(temp);
         }
